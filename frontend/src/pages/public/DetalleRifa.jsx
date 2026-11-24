@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Award, Calendar, RefreshCw, ShieldCheck } from "lucide-react";
+import { Award, Calendar, RefreshCw } from "lucide-react";
 import {
   numerosService,
   reservasService,
@@ -35,7 +35,6 @@ export function DetalleRifa() {
   const [form, setForm] = useState({
     nombres_completos: "",
     whatsapp: "",
-    correo: "",
     acepta_reglamento: false,
     autoriza_datos: false,
   });
@@ -162,23 +161,13 @@ export function DetalleRifa() {
               </p>
             </div>
             <div className="col-span-2 flex items-center gap-2 border-t border-slate-100 pt-3 text-xs text-slate-600">
-              <Calendar className="h-4 w-4 shrink-0 text-emerald-600" aria-hidden="true" />
+              <Calendar className="h-4 w-4 shrink-0 text-[#C9349B]" aria-hidden="true" />
               <span>
                 Sorteo: <strong>{formatBogotaDate(rifa.fecha_sorteo)}</strong>
                 {rifa.loteria_mecanismo ? ` · ${rifa.loteria_mecanismo}` : ""}
               </span>
             </div>
           </div>
-
-          {rifa.autorizacion ? (
-            <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900">
-              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" aria-hidden="true" />
-              <p>
-                Operador: <strong>{rifa.autorizacion.operador}</strong> · Resolución:{" "}
-                <strong>{rifa.autorizacion.numero_resolucion}</strong>
-              </p>
-            </div>
-          ) : null}
         </div>
       </section>
 
@@ -291,30 +280,6 @@ export function DetalleRifa() {
                 Ingresa un número de WhatsApp válido (10 a 15 dígitos).
               </p>
             </div>
-          </div>
-
-          <div>
-            <label htmlFor="correo" className="block text-sm font-semibold text-slate-800">
-              Correo electrónico (opcional)
-            </label>
-            <span id="correo-hint" className="mb-1 block text-xs text-slate-500">
-              Formato: nombre@correo.com
-            </span>
-            <input
-              id="correo"
-              name="correo"
-              type="email"
-              inputMode="email"
-              autoComplete="email"
-              aria-describedby="correo-hint"
-              data-error="correo-error"
-              value={form.correo}
-              onChange={(e) => setForm({ ...form, correo: e.target.value })}
-              className="field-input w-full rounded-xl border border-slate-300 px-3 py-2.5 text-slate-900 focus:border-emerald-600 focus:outline-none"
-            />
-            <p id="correo-error" className="field-error mt-1 items-center gap-1 text-xs text-rose-700">
-              Ingresa un correo electrónico válido.
-            </p>
           </div>
 
           <div className="space-y-2 pt-1">

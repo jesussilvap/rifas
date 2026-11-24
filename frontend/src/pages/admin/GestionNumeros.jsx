@@ -345,19 +345,20 @@ export default function GestionNumeros() {
                   const disabledInBatch = batchMode && item.estado !== "PENDIENTE";
 
                   let classes =
-                    "border-emerald-200 bg-emerald-600 text-white hover:bg-emerald-700";
+                    "border-[#A82780] bg-[#C9349B] text-white hover:bg-[#B22B88]";
                   let icon = null;
 
                   if (isBatchChecked) {
                     classes =
-                      "border-amber-700 bg-amber-500 text-slate-950 ring-2 ring-amber-300";
+                      "border-[#260A49] bg-[#3B146B] text-white ring-2 ring-[#C9349B]";
                     icon = <Check className="h-3.5 w-3.5" aria-hidden="true" />;
                   } else if (item.estado === "PENDIENTE") {
                     classes =
-                      "border-slate-400 bg-slate-300 text-slate-900 hover:bg-slate-400";
+                      "border-[#E59B3E] bg-[#FFB458] text-[#3B146B] hover:bg-[#F5A744]";
                     icon = <Clock className="h-3 w-3" aria-hidden="true" />;
                   } else if (item.estado === "VENDIDO") {
-                    classes = "border-rose-700 bg-rose-600 text-white hover:bg-rose-700";
+                    classes =
+                      "border-[#DC5462] bg-[#F36A78] text-[#240A3E] hover:bg-[#EA5968]";
                     icon = <Lock className="h-3 w-3" aria-hidden="true" />;
                   }
 

@@ -2,14 +2,14 @@ import { Check, Clock, Lock, Search } from "lucide-react";
 import { formatCOP } from "../../utils/format.js";
 
 /**
- * Cuadrícula responsiva Mobile-First (Sección 4 y 16.2):
- * - Estados diferenciados por color + estilo/icono (no solo color, WCAG 1.4.1).
- * - Botones táctiles >= 44x44 px.
- * - Búsqueda rápida, filtro por estado y paginación por bloques.
+ * Cuadrícula responsiva Mobile-First:
+ * - Disponible: Magenta (#C9349B)
+ * - Seleccionado: Deep Violet (#3B146B)
+ * - Pendiente: Warm Yellow (#FFB458)
+ * - Vendido: Coral Pink (#F36A78)
  */
 export function NumeroGrid({
   numeros = [],
-  resumen = { total: 0, disponibles: 0, pendientes: 0, vendidos: 0 },
   precioNumero = 0,
   moneda = "COP",
   selected = [],
@@ -26,42 +26,34 @@ export function NumeroGrid({
 
   return (
     <section aria-label="Cuadrícula de números" className="space-y-4">
-      {/* Indicadores de estado */}
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <div className="rounded-xl border border-slate-200 bg-white p-3">
-          <p className="text-xs text-slate-500">Total</p>
-          <p className="text-lg font-bold text-slate-900">{resumen.total || 0}</p>
-        </div>
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-3">
-          <p className="text-xs text-emerald-800">Disponibles</p>
-          <p className="text-lg font-bold text-emerald-700">{resumen.disponibles || 0}</p>
-        </div>
-        <div className="rounded-xl border border-slate-300 bg-slate-100 p-3">
-          <p className="text-xs text-slate-700">Pendientes</p>
-          <p className="text-lg font-bold text-slate-700">{resumen.pendientes || 0}</p>
-        </div>
-        <div className="rounded-xl border border-rose-200 bg-rose-50/70 p-3">
-          <p className="text-xs text-rose-800">Vendidos</p>
-          <p className="text-lg font-bold text-rose-700">{resumen.vendidos || 0}</p>
-        </div>
-      </div>
-
-      {/* Leyenda accesible */}
-      <div className="flex flex-wrap items-center gap-3 text-xs font-medium text-slate-700">
+      {/* Leyenda accesible con los colores de estado */}
+      <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-700">
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-3.5 w-3.5 rounded bg-emerald-600" aria-hidden="true" />
+          <span
+            className="h-3.5 w-3.5 rounded bg-[#C9349B]"
+            aria-hidden="true"
+          />
           Disponible
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-3.5 w-3.5 rounded bg-blue-600" aria-hidden="true" />
+          <span
+            className="h-3.5 w-3.5 rounded bg-[#3B146B]"
+            aria-hidden="true"
+          />
           Seleccionado
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-3.5 w-3.5 rounded bg-slate-400" aria-hidden="true" />
+          <span
+            className="h-3.5 w-3.5 rounded bg-[#FFB458]"
+            aria-hidden="true"
+          />
           Pendiente
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="h-3.5 w-3.5 rounded bg-rose-600" aria-hidden="true" />
+          <span
+            className="h-3.5 w-3.5 rounded bg-[#F36A78]"
+            aria-hidden="true"
+          />
           Vendido
         </span>
       </div>
@@ -80,7 +72,7 @@ export function NumeroGrid({
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Buscar número exacto (ej. 025)"
             aria-label="Buscar número exacto"
-            className="w-full rounded-xl border border-slate-300 bg-white py-2.5 pr-3 pl-9 text-slate-900 focus:border-emerald-600 focus:outline-none"
+            className="w-full rounded-xl border border-slate-300 bg-white py-2.5 pr-3 pl-9 text-slate-900 focus:border-[#3B146B] focus:outline-none"
           />
         </div>
 
@@ -88,7 +80,7 @@ export function NumeroGrid({
           value={estadoFilter}
           onChange={(e) => onEstadoFilterChange(e.target.value)}
           aria-label="Filtrar por estado"
-          className="rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-slate-900 focus:border-emerald-600 focus:outline-none"
+          className="rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-slate-900 focus:border-[#3B146B] focus:outline-none"
         >
           <option value="">Todos los estados</option>
           <option value="DISPONIBLE">Solo disponibles</option>
@@ -118,23 +110,23 @@ export function NumeroGrid({
             const isAvailable = item.estado === "DISPONIBLE";
 
             let classes =
-              "border-emerald-200 bg-emerald-600 text-white hover:bg-emerald-700";
+              "border-[#A82780] bg-[#C9349B] text-white hover:bg-[#B22B88]";
             let statusText = "Disponible";
             let icon = null;
 
             if (isSelected) {
               classes =
-                "border-blue-700 bg-blue-600 text-white ring-2 ring-blue-300";
+                "border-[#260A49] bg-[#3B146B] text-white ring-2 ring-[#C9349B]";
               statusText = "Seleccionado";
               icon = <Check className="h-3.5 w-3.5" aria-hidden="true" />;
             } else if (item.estado === "PENDIENTE") {
               classes =
-                "border-slate-300 bg-slate-300 text-slate-700 cursor-not-allowed";
+                "border-[#E59B3E] bg-[#FFB458] text-[#3B146B] cursor-not-allowed";
               statusText = "Pendiente";
               icon = <Clock className="h-3 w-3" aria-hidden="true" />;
             } else if (item.estado === "VENDIDO") {
               classes =
-                "border-rose-700 bg-rose-600 text-white opacity-85 cursor-not-allowed";
+                "border-[#DC5462] bg-[#F36A78] text-[#240A3E] cursor-not-allowed";
               statusText = "Vendido";
               icon = <Lock className="h-3 w-3" aria-hidden="true" />;
             }
