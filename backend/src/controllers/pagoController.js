@@ -141,7 +141,9 @@ export async function servirComprobantePrivadoAdmin(req, res, next) {
 
     res.setHeader("Content-Type", pago.comprobante_mime || "image/webp");
     res.setHeader("Cache-Control", "private, max-age=300");
-    res.sendFile(filePath);
+    const stream = fs.createReadStream(filePath);
+    stream.on("error", (err) => next(err));
+    stream.pipe(res);
   } catch (error) {
     next(error);
   }

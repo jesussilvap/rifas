@@ -8,13 +8,13 @@ import cookieParser from "cookie-parser";
 import { env } from "./config/env.js";
 import { httpLogger } from "./utils/logger.js";
 import apiRoutes from "./routes/index.js";
+import { storageService } from "./services/storageService.js";
 import {
   errorMiddleware,
   notFoundMiddleware,
 } from "./middlewares/errorMiddleware.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const publicUploadsDir = path.resolve(__dirname, "../public_uploads");
 const frontendDistDir = path.resolve(__dirname, "../../frontend/dist");
 
 export function createApp() {
@@ -53,13 +53,15 @@ export function createApp() {
 
   // Solo los archivos explícitamente públicos (catálogo/premios/QR) se sirven estáticamente.
   // Los comprobantes privados NUNCA se exponen aquí.
-  app.use(
-    "/uploads",
-    express.static(publicUploadsDir, {
-      maxAge: env.isProd ? "7d" : 0,
-      dotfiles: "deny",
-    })
-  );
+  for (const publicDir of storageService.getPublicRoots()) {
+    app.use(
+      "/uploads",
+      express.static(publicDir, {
+        maxAge: env.isProd ? "7d" : 0,
+        dotfiles: "deny",
+      })
+    );
+  }
 
   app.use("/api", apiRoutes);
 
@@ -72,8 +74,12 @@ export function createApp() {
       })
     );
 
-    app.get(/^\/(?!api|uploads).*/, (req, res) => {
-      res.sendFile(path.join(frontendDistDir, "index.html"));
+    app.get(/^\/(?!api|uploads).*/, (req, res, next) => {
+      const indexPath = path.join(frontendDistDir, "index.html");
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      const stream = fs.createReadStream(indexPath);
+      stream.on("error", (err) => next(err));
+      stream.pipe(res);
     });
   }
 

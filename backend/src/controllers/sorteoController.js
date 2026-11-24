@@ -205,8 +205,10 @@ export async function servirEvidenciaSorteoAdmin(req, res, next) {
     }
 
     res.setHeader("Content-Type", "image/webp");
-    res.setHeader("Cache-Control", "private, no-store");
-    res.sendFile(filePath);
+    res.setHeader("Cache-Control", "private, max-age=300");
+    const stream = fs.createReadStream(filePath);
+    stream.on("error", (err) => next(err));
+    stream.pipe(res);
   } catch (error) {
     next(error);
   }
