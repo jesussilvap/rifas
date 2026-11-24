@@ -11,7 +11,12 @@ import {
 
 function toMysqlDateTime(value) {
   if (!value) return null;
-  const date = new Date(value);
+  const raw = String(value).trim();
+  if (!raw) return null;
+  // Si viene de <input type="datetime-local"> sin zona horaria, interpretarlo en hora Colombia (UTC-5)
+  const hasTimezone = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(raw);
+  const normalized = hasTimezone ? raw : `${raw.replace(" ", "T")}-05:00`;
+  const date = new Date(normalized);
   if (Number.isNaN(date.getTime())) return null;
   return date.toISOString().slice(0, 19).replace("T", " ");
 }

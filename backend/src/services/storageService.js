@@ -113,4 +113,22 @@ export const storageService = {
 
     return primaryPath;
   },
+
+  resolvePublicPath(folder, filename) {
+    assertSafeFolder("public", folder);
+    const safeName = path.basename(String(filename || ""));
+    if (!safeName || safeName.startsWith(".")) {
+      throw new Error("Nombre de archivo inválido");
+    }
+    const relativeKey = path.join(folder, safeName);
+    const primaryPath = safeJoin(PUBLIC_ROOT, relativeKey);
+    if (fs.existsSync(primaryPath)) return primaryPath;
+
+    if (PUBLIC_ROOT !== LEGACY_PUBLIC_ROOT) {
+      const legacyPath = safeJoin(LEGACY_PUBLIC_ROOT, relativeKey);
+      if (fs.existsSync(legacyPath)) return legacyPath;
+    }
+
+    return null;
+  },
 };

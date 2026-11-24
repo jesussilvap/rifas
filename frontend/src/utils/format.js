@@ -15,6 +15,27 @@ export function formatBogotaDate(isoString) {
   }).format(new Date(isoString));
 }
 
+/**
+ * Convierte una fecha ISO (UTC) al formato YYYY-MM-DDTHH:mm en hora Colombia (America/Bogota)
+ * para inputs <input type="datetime-local">.
+ */
+export function toBogotaInputValue(isoString) {
+  if (!isoString) return "";
+  const date = new Date(isoString);
+  if (Number.isNaN(date.getTime())) return "";
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Bogota",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(date);
+  const get = (type) => parts.find((p) => p.type === type)?.value || "00";
+  return `${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}`;
+}
+
 export function formatNumero(numero, digitos = 3) {
   return String(numero).padStart(Number(digitos) || 3, "0");
 }

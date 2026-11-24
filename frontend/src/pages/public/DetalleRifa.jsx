@@ -117,12 +117,13 @@ export function DetalleRifa() {
     <div className="space-y-8 pb-24">
       {/* Encabezado y premios */}
       <section className="grid gap-6 lg:grid-cols-12">
-        <div className="aspect-video overflow-hidden rounded-2xl bg-slate-200 lg:col-span-6">
+        <div className="aspect-video w-full overflow-hidden rounded-2xl bg-slate-200 lg:col-span-6">
           {rifa.imagen_principal ? (
             <img
               src={rifa.imagen_principal}
               alt={rifa.titulo}
-              className="h-full w-full object-cover"
+              decoding="async"
+              className="block h-full w-full object-cover"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-slate-400">
@@ -168,6 +169,33 @@ export function DetalleRifa() {
               </span>
             </div>
           </div>
+
+          {rifa.premios?.length > 0 ? (
+            <div className="space-y-2 rounded-2xl border border-slate-200 bg-white p-4">
+              <p className="text-xs font-bold uppercase tracking-wide text-slate-500">
+                Premio(s)
+              </p>
+              <ul className="space-y-2">
+                {rifa.premios.map((premio) => (
+                  <li key={premio.id} className="flex items-start gap-2.5 text-sm">
+                    <Award className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" aria-hidden="true" />
+                    <div>
+                      <p className="font-bold text-slate-900">
+                        {premio.cantidad > 1 ? `${premio.cantidad}x ` : ""}
+                        {premio.nombre}
+                        {premio.marca || premio.modelo
+                          ? ` (${[premio.marca, premio.modelo].filter(Boolean).join(" ")})`
+                          : ""}
+                      </p>
+                      {premio.descripcion ? (
+                        <p className="text-xs text-slate-600">{premio.descripcion}</p>
+                      ) : null}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </div>
       </section>
 

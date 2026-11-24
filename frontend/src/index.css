@@ -34,49 +34,51 @@
   }
 }
 
-html {
-  scroll-padding-top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
-  scroll-padding-bottom: calc(
-    var(--sticky-bar-offset) + env(safe-area-inset-bottom, 0px)
-  );
-}
+@layer base {
+  html {
+    scroll-padding-top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
+    scroll-padding-bottom: calc(
+      var(--sticky-bar-offset) + env(safe-area-inset-bottom, 0px)
+    );
+  }
 
-/* No usar overflow-x: hidden en html/body para no recortar contenido accesible */
-body {
-  min-block-size: 100dvh;
-  overflow-wrap: break-word;
-}
+  /* No usar overflow-x: hidden en html/body para no recortar contenido accesible */
+  body {
+    min-block-size: 100dvh;
+    overflow-wrap: break-word;
+  }
 
-img,
-video {
-  max-inline-size: 100%;
-  block-size: auto;
-}
+  img,
+  video {
+    max-inline-size: 100%;
+    block-size: auto;
+  }
 
-:where(a, code) {
-  overflow-wrap: anywhere;
-}
+  :where(a, code) {
+    overflow-wrap: anywhere;
+  }
 
-/* Tipografía responsiva (clamp con max <= 2.5x min para zoom 200% WCAG 1.4.4) */
-h1 {
-  font-size: clamp(1.5rem, 1.15rem + 1.8vw, 2.5rem);
-  line-height: 1.15;
-  text-wrap: balance;
-}
+  /* Tipografía responsiva (clamp con max <= 2.5x min para zoom 200% WCAG 1.4.4) */
+  h1 {
+    font-size: clamp(1.5rem, 1.15rem + 1.8vw, 2.5rem);
+    line-height: 1.15;
+    text-wrap: balance;
+  }
 
-h2 {
-  font-size: clamp(1.25rem, 1.05rem + 1vw, 1.875rem);
-  line-height: 1.25;
-  text-wrap: balance;
-}
+  h2 {
+    font-size: clamp(1.25rem, 1.05rem + 1vw, 1.875rem);
+    line-height: 1.25;
+    text-wrap: balance;
+  }
 
-h3 {
-  text-wrap: balance;
-}
+  h3 {
+    text-wrap: balance;
+  }
 
-p,
-li {
-  text-wrap: pretty;
+  p,
+  li {
+    text-wrap: pretty;
+  }
 }
 
 /* Tamaños mínimos táctiles adaptados al método de entrada (WCAG 2.5.5 / 2.5.8) */

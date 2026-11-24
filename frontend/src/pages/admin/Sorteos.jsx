@@ -11,7 +11,7 @@ import {
   Upload,
 } from "lucide-react";
 import { rifasService, sorteosService } from "../../services/api.js";
-import { formatBogotaDate } from "../../utils/format.js";
+import { formatBogotaDate, toBogotaInputValue } from "../../utils/format.js";
 import { ModalDialog } from "../../components/common/ModalDialog.jsx";
 
 const EMPTY_FORM = {
@@ -61,9 +61,7 @@ export default function Sorteos() {
       ...EMPTY_FORM,
       id_rifa: firstRifa ? String(firstRifa.id) : "",
       nombre_loteria: firstRifa?.loteria_mecanismo || "",
-      fecha_sorteo: firstRifa?.fecha_sorteo
-        ? String(firstRifa.fecha_sorteo).slice(0, 16)
-        : "",
+      fecha_sorteo: toBogotaInputValue(firstRifa?.fecha_sorteo),
     });
     setError("");
     setModalOpen(true);
@@ -75,9 +73,7 @@ export default function Sorteos() {
       ...prev,
       id_rifa: rifaId,
       nombre_loteria: rifa?.loteria_mecanismo || prev.nombre_loteria,
-      fecha_sorteo: rifa?.fecha_sorteo
-        ? String(rifa.fecha_sorteo).slice(0, 16)
-        : prev.fecha_sorteo,
+      fecha_sorteo: toBogotaInputValue(rifa?.fecha_sorteo) || prev.fecha_sorteo,
     }));
   };
 

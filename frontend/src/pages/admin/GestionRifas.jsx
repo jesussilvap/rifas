@@ -13,7 +13,12 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { rifasService } from "../../services/api.js";
-import { formatBogotaDate, formatCOP } from "../../utils/format.js";
+import {
+  formatBogotaDate,
+  formatCOP,
+  toBogotaInputValue,
+} from "../../utils/format.js";
+import { optimizeImageForUpload } from "../../utils/imageOptimizer.js";
 import { ModalDialog } from "../../components/common/ModalDialog.jsx";
 
 function slugify(text) {
@@ -125,8 +130,8 @@ export default function GestionRifas() {
       digitos_formato: String(rifa.digitos_formato ?? 2),
       loteria_mecanismo: rifa.loteria_mecanismo || "",
       reglamento_version: rifa.reglamento_version || "",
-      fecha_cierre: rifa.fecha_cierre ? String(rifa.fecha_cierre).slice(0, 16) : "",
-      fecha_sorteo: rifa.fecha_sorteo ? String(rifa.fecha_sorteo).slice(0, 16) : "",
+      fecha_cierre: toBogotaInputValue(rifa.fecha_cierre),
+      fecha_sorteo: toBogotaInputValue(rifa.fecha_sorteo),
       reserva_minutos: String(rifa.reserva_minutos || 15),
     });
     setError("");
@@ -253,8 +258,9 @@ export default function GestionRifas() {
     setNotice("");
     setBusy(true);
     try {
+      const optimized = await optimizeImageForUpload(file);
       const fd = new FormData();
-      fd.append("imagen", file);
+      fd.append("imagen", optimized);
       await rifasService.uploadImageAdmin(rifa.id, fd);
       setNotice(`Imagen actualizada para "${rifa.titulo}".`);
       loadRifas();

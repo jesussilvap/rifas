@@ -51,17 +51,32 @@ export function createApp() {
   app.use(express.json({ limit: "1mb" }));
   app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 
-  // Solo los archivos explícitamente públicos (catálogo/premios/QR) se sirven estáticamente.
-  // Los comprobantes privados NUNCA se exponen aquí.
-  for (const publicDir of storageService.getPublicRoots()) {
-    app.use(
-      "/uploads",
-      express.static(publicDir, {
-        maxAge: env.isProd ? "7d" : 0,
-        dotfiles: "deny",
-      })
-    );
-  }
+  // Solo los archivos explícitamente públicos (catálogo/premios/QR) se entregan por stream seguro
+  // (evita bloqueos de Express send/static sobre carpetas con punto como .builds/ en Hostinger).
+  app.get("/uploads/:folder/:filename", (req, res, next) => {
+    try {
+      const { folder, filename } = req.params;
+      const filePath = storageService.resolvePublicPath(folder, filename);
+      if (!filePath) {
+        return res.status(404).end();
+      }
+      const ext = path.extname(filePath).toLowerCase();
+      const mimeMap = {
+        ".webp": "image/webp",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".png": "image/png",
+      };
+      res.setHeader("Content-Type", mimeMap[ext] || "application/octet-stream");
+      res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+      res.setHeader("Cache-Control", env.isProd ? "public, max-age=604800" : "no-cache");
+      const stream = fs.createReadStream(filePath);
+      stream.on("error", (err) => next(err));
+      return stream.pipe(res);
+    } catch {
+      return res.status(404).end();
+    }
+  });
 
   app.use("/api", apiRoutes);
 
