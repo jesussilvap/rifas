@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+
+# Runtime uploads (keep directory structure only)
+backend/public_uploads/*
+!backend/public_uploads/.gitkeep
+backend/private_uploads/*
+!backend/private_uploads/.gitkeep
+
+# Logs & OS
+*.log
+.DS_Store
+Thumbs.db
+
+# Installed local agent skills (tracked via skills-lock.json)
+.agents/
