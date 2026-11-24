@@ -40,7 +40,7 @@ export async function reportarPago({
     const [reservas] = await conn.query(
       `SELECT r.id, r.codigo, r.estado, r.valor_total, r.fecha_vencimiento,
               rf.titulo AS rifa_titulo, rf.digitos_formato, rf.moneda,
-              p.nombres_completos
+              p.nombres_completos, p.whatsapp
        FROM reservas r
        INNER JOIN rifas rf ON rf.id = r.id_rifa
        INNER JOIN participantes p ON p.id = r.id_participante
@@ -132,6 +132,7 @@ export async function reportarPago({
         rifa_titulo: reserva.rifa_titulo,
         moneda: reserva.moneda,
         participante: reserva.nombres_completos,
+        whatsapp: reserva.whatsapp,
         numeros: nums.map((n) => formatNumero(n.numero, reserva.digitos_formato)),
       },
     };

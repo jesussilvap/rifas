@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import {
   Check,
   CheckCircle2,
   Clock,
   Copy,
-  MessageCircle,
+  ShoppingCart,
   Upload,
 } from "lucide-react";
 import {
@@ -14,17 +14,38 @@ import {
   reservasService,
 } from "../../services/api.js";
 import {
-  buildWhatsappUrl,
   copyTextSafely,
   formatBogotaDate,
   formatCOP,
 } from "../../utils/format.js";
 import { optimizeImageForUpload } from "../../utils/imageOptimizer.js";
 
+const PAYMENT_LOGOS = {
+  NEQUI: {
+    src: "/logos/nequi.jpg",
+    alt: "Logo Nequi",
+    bgClass: "bg-white",
+    label: "Nequi",
+  },
+  BREB: {
+    src: "/logos/bre-b.jpg",
+    alt: "Logo Bre-B",
+    bgClass: "bg-[#2C0064]",
+    label: "Bre-B",
+  },
+};
+
+function formatMedioLabel(medio) {
+  if (medio === "BREB") return "Bre-B";
+  if (medio === "NEQUI") return "Nequi";
+  return medio || "—";
+}
+
 /**
- * Pantalla de pago en 2 pasos (Sección 5.5 y 16.2):
- * Paso 1: Transferencia, carga de comprobante (galería/cámara) y "Finalizar solicitud".
- * Paso 2: Confirmación con código de solicitud y botón principal de WhatsApp.
+ * Pantalla de pago en 2 pasos:
+ * Paso 1: Transferencia (con logos Nequi / Bre-B), carga de comprobante y "Finalizar solicitud".
+ * Paso 2: Confirmación con datos registrados (números, nombre, WhatsApp, tipo de pago)
+ *         y botón "Comprar nuevamente" hacia la rifa.
  */
 export function Pago() {
   const { token } = useParams();
@@ -39,7 +60,6 @@ export function Pago() {
 
   const [medioPago, setMedioPago] = useState("NEQUI");
   const [valorReportado, setValorReportado] = useState("");
-  const [referencia, setReferencia] = useState("");
   const [file, setFile] = useState(null);
   const [optimizingImage, setOptimizingImage] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
@@ -121,7 +141,6 @@ export function Pago() {
       fd.append("token_acceso", token);
       fd.append("medio_pago", medioPago);
       fd.append("valor_reportado", valorReportado);
-      if (referencia.trim()) fd.append("referencia_transferencia", referencia.trim());
       fd.append("comprobante", file);
 
       const res = await pagosService.reportPublic(fd, idempotencyKey);
@@ -142,7 +161,10 @@ export function Pago() {
 
   if (!reserva) {
     return (
-      <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-5 text-rose-800">
+      <div
+        role="alert"
+        className="rounded-xl border border-rose-200 bg-rose-50 p-5 text-rose-800"
+      >
         {error || "No se encontró la reserva."}
       </div>
     );
@@ -151,16 +173,21 @@ export function Pago() {
   const mins = secondsLeft !== null ? Math.floor(secondsLeft / 60) : 0;
   const secs = secondsLeft !== null ? String(secondsLeft % 60).padStart(2, "0") : "00";
   const isStep2 =
-    Boolean(submitResult) || reserva.estado === "PENDIENTE_VERIFICACION" || reserva.estado === "COMPLETADA";
+    Boolean(submitResult) ||
+    reserva.estado === "PENDIENTE_VERIFICACION" ||
+    reserva.estado === "COMPLETADA";
 
-  const whatsappInfo = submitResult?.whatsapp;
-  const fallbackWaUrl =
-    !whatsappInfo && config?.general?.whatsapp_comprobantes
-      ? buildWhatsappUrl({
-          whatsappInternacional: config.general.whatsapp_comprobantes,
-          mensaje: `Hola, he realizado el pago de mi participación.\n\nRifa: ${reserva.rifa.titulo}\nNúmeros: ${reserva.numeros.join(", ")}\nValor: ${formatCOP(reserva.valor_total, reserva.rifa.moneda)}\nCódigo de solicitud: ${reserva.ultimo_pago?.codigo || reserva.codigo}`,
-        })
-      : null;
+  const pagoConfirmado = submitResult?.pago || reserva.ultimo_pago;
+  const numerosConfirmados = pagoConfirmado?.numeros?.length
+    ? pagoConfirmado.numeros.join(", ")
+    : (reserva.numeros || []).join(", ");
+  const nombreConfirmado =
+    pagoConfirmado?.participante || reserva.participante?.nombres_enmascarado || "—";
+  const whatsappConfirmado =
+    pagoConfirmado?.whatsapp || reserva.participante?.whatsapp_enmascarado || "—";
+  const tipoPagoConfirmado = formatMedioLabel(pagoConfirmado?.medio_pago || medioPago);
+  const codigoSolicitud = pagoConfirmado?.codigo || reserva.codigo;
+  const rifaDestino = reserva.rifa?.slug ? `/rifas/${reserva.rifa.slug}` : "/rifas";
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -208,14 +235,17 @@ export function Pago() {
       </section>
 
       {error ? (
-        <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
+        <div
+          role="alert"
+          className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800"
+        >
           {error}
         </div>
       ) : null}
 
-      {/* PASO 2: Confirmación y envío por WhatsApp */}
+      {/* PASO 2: Solicitud registrada con resumen completo y botón Comprar nuevamente */}
       {isStep2 ? (
-        <section className="space-y-4 rounded-2xl border border-brand-200 bg-white p-5 sm:p-6">
+        <section className="space-y-5 rounded-2xl border border-brand-200 bg-white p-5 sm:p-6">
           <div className="flex items-start gap-3">
             <CheckCircle2 className="h-7 w-7 shrink-0 text-brand-600" aria-hidden="true" />
             <div>
@@ -224,36 +254,50 @@ export function Pago() {
               </h2>
               <p className="mt-1 text-sm text-slate-600">
                 Código de solicitud:{" "}
-                <strong className="font-mono text-slate-900">
-                  {submitResult?.pago?.codigo || reserva.ultimo_pago?.codigo || reserva.codigo}
-                </strong>
+                <strong className="font-mono text-slate-900">{codigoSolicitud}</strong>
               </p>
             </div>
           </div>
 
-          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
-            <p className="font-bold">Importante: envío de comprobante de pago</p>
-            <p className="mt-1">
-              {whatsappInfo?.instrucciones ||
-                `Tu solicitud fue registrada y quedó pendiente de verificación. Envía también la imagen del comprobante al número de WhatsApp ${config?.general?.whatsapp_comprobantes || ""} usando el botón inferior. Tu participación solo quedará confirmada cuando el administrador verifique el ingreso del dinero.`}
-            </p>
-          </div>
+          <dl className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm sm:grid-cols-2">
+            <div>
+              <dt className="text-xs font-medium text-slate-500">Número(s)</dt>
+              <dd className="mt-0.5 font-mono font-bold text-slate-900">
+                {numerosConfirmados}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-xs font-medium text-slate-500">Tipo de pago</dt>
+              <dd className="mt-0.5 font-bold text-brand-700">{tipoPagoConfirmado}</dd>
+            </div>
+            <div>
+              <dt className="text-xs font-medium text-slate-500">Nombre</dt>
+              <dd className="mt-0.5 font-semibold text-slate-900">{nombreConfirmado}</dd>
+            </div>
+            <div>
+              <dt className="text-xs font-medium text-slate-500">WhatsApp</dt>
+              <dd className="mt-0.5 font-mono font-semibold text-slate-900">
+                {whatsappConfirmado}
+              </dd>
+            </div>
+          </dl>
 
-          <a
-            href={whatsappInfo?.url || fallbackWaUrl || "#"}
-            target="_blank"
-            rel="noopener noreferrer"
+          <p className="rounded-xl border border-brand-100 bg-brand-50 p-3.5 text-sm text-brand-900">
+            Tu comprobante quedó registrado y en estado{" "}
+            <strong>pendiente de verificación</strong>. El administrador confirmará el
+            ingreso del dinero para marcar tus números como vendidos.
+          </p>
+
+          <Link
+            to={rifaDestino}
             className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-3.5 text-base font-bold text-white transition hover:bg-brand-700"
           >
-            <MessageCircle className="h-5 w-5" aria-hidden="true" />
-            Enviar comprobante por WhatsApp
-          </a>
-          <p className="text-center text-xs text-slate-500">
-            Al abrir WhatsApp recuerda adjuntar manualmente la captura del comprobante.
-          </p>
+            <ShoppingCart className="h-5 w-5" aria-hidden="true" />
+            Comprar nuevamente
+          </Link>
         </section>
       ) : (
-        /* PASO 1: Datos de transferencia + carga del comprobante + finalizar */
+        /* PASO 1: Datos de transferencia (con logos Nequi/Bre-B) + carga de comprobante */
         <>
           <section className="space-y-3 rounded-2xl border border-slate-200 bg-white p-4 sm:p-6">
             <h2 className="text-lg font-bold text-slate-900">
@@ -263,15 +307,30 @@ export function Pago() {
               {(config?.medios_pago || []).map((medio) => {
                 const valueToCopy = medio.numero_celular || medio.llave || "";
                 const copyId = `${medio.medio}-${valueToCopy}`;
+                const logo = PAYMENT_LOGOS[medio.medio];
+
                 return (
                   <div
                     key={medio.medio}
                     className="flex flex-col justify-between rounded-xl border border-slate-200 bg-slate-50 p-4"
                   >
-                    <div className="space-y-1">
-                      <p className="text-xs font-bold uppercase tracking-wide text-brand-700">
-                        {medio.medio === "BREB" ? "Bre-B" : "Nequi"}
-                      </p>
+                    <div className="space-y-2">
+                      {logo ? (
+                        <div
+                          className={`flex h-16 items-center justify-center overflow-hidden rounded-xl border border-slate-200 px-3 py-2 ${logo.bgClass}`}
+                        >
+                          <img
+                            src={logo.src}
+                            alt={logo.alt}
+                            className="max-h-11 w-auto object-contain"
+                          />
+                        </div>
+                      ) : (
+                        <p className="text-xs font-bold uppercase tracking-wide text-brand-700">
+                          {formatMedioLabel(medio.medio)}
+                        </p>
+                      )}
+
                       {medio.titular ? (
                         <p className="text-sm font-semibold text-slate-900">
                           {medio.titular}
@@ -326,7 +385,10 @@ export function Pago() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label htmlFor="medio" className="mb-1 block text-sm font-semibold text-slate-800">
+                <label
+                  htmlFor="medio"
+                  className="mb-1 block text-sm font-semibold text-slate-800"
+                >
                   Medio utilizado *
                 </label>
                 <select
@@ -341,7 +403,10 @@ export function Pago() {
               </div>
 
               <div>
-                <label htmlFor="valor" className="mb-1 block text-sm font-semibold text-slate-800">
+                <label
+                  htmlFor="valor"
+                  className="mb-1 block text-sm font-semibold text-slate-800"
+                >
                   Valor transferido *
                 </label>
                 <input
@@ -355,21 +420,6 @@ export function Pago() {
                   className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-slate-900"
                 />
               </div>
-            </div>
-
-            <div>
-              <label htmlFor="referencia" className="mb-1 block text-sm font-semibold text-slate-800">
-                Referencia de transferencia (opcional)
-              </label>
-              <input
-                id="referencia"
-                type="text"
-                maxLength={150}
-                value={referencia}
-                onChange={(e) => setReferencia(e.target.value)}
-                placeholder="Ej. M12345678"
-                className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-slate-900"
-              />
             </div>
 
             <div>
