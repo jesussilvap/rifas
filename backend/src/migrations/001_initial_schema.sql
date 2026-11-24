@@ -253,3 +253,14 @@ CREATE TABLE IF NOT EXISTS auditoria (
     REFERENCES usuarios_admin(id),
   INDEX idx_auditoria_fecha (fecha)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS archivos_almacenados (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  clave VARCHAR(255) NOT NULL UNIQUE,
+  visibilidad ENUM('public','private') NOT NULL,
+  mime VARCHAR(100) NOT NULL DEFAULT 'image/webp',
+  tamano_bytes INT UNSIGNED NOT NULL,
+  contenido MEDIUMBLOB NOT NULL,
+  creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_archivos_vis_clave (visibilidad, clave)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

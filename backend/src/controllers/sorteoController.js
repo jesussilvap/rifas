@@ -203,17 +203,18 @@ export async function servirEvidenciaSorteoAdmin(req, res, next) {
       throw new AppError("Evidencia del sorteo no encontrada", 404, "EVIDENCE_NOT_FOUND");
     }
 
-    const filePath = storageService.resolvePrivatePath(rows[0].acta_url);
-    if (!fs.existsSync(filePath)) {
+    const file = await storageService.readFile({
+      visibility: "private",
+      key: rows[0].acta_url,
+    });
+    if (!file) {
       throw new AppError("Archivo de evidencia no disponible", 404, "FILE_MISSING");
     }
 
-    res.setHeader("Content-Type", "image/webp");
+    res.setHeader("Content-Type", file.mime || "image/webp");
     res.setHeader("Cache-Control", "private, max-age=300");
-    const stream = fs.createReadStream(filePath);
-    stream.on("error", (err) => next(err));
-    stream.pipe(res);
+    return res.send(file.buffer);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }

@@ -125,8 +125,11 @@ export async function servirComprobantePrivadoAdmin(req, res, next) {
     }
 
     const pago = rows[0];
-    const filePath = storageService.resolvePrivatePath(pago.comprobante_url);
-    if (!fs.existsSync(filePath)) {
+    const file = await storageService.readFile({
+      visibility: "private",
+      key: pago.comprobante_url,
+    });
+    if (!file) {
       throw new AppError("Archivo de comprobante no disponible", 404, "FILE_MISSING");
     }
 
@@ -139,13 +142,11 @@ export async function servirComprobantePrivadoAdmin(req, res, next) {
       )
       .catch(() => {});
 
-    res.setHeader("Content-Type", pago.comprobante_mime || "image/webp");
+    res.setHeader("Content-Type", file.mime || pago.comprobante_mime || "image/webp");
     res.setHeader("Cache-Control", "private, max-age=300");
-    const stream = fs.createReadStream(filePath);
-    stream.on("error", (err) => next(err));
-    stream.pipe(res);
+    return res.send(file.buffer);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
