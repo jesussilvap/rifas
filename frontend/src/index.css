@@ -302,6 +302,34 @@ nav a[aria-current="page"] {
   text-decoration-thickness: 2px;
 }
 
+/* ==========================================================================
+   Modales nativos <dialog> (guía dialog de modern-web-guidance)
+   ========================================================================== */
+dialog:modal {
+  overscroll-behavior: contain;
+}
+
+dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+.app-modal {
+  margin: auto;
+  width: min(38rem, calc(100dvw - 1.5rem));
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  border: 0;
+  border-radius: 1rem;
+  background: transparent;
+  overflow: visible;
+}
+
+.app-modal::backdrop {
+  background: rgb(15 23 42 / 0.65);
+  backdrop-filter: blur(2px);
+}
+
 .visually-hidden:where(:not(:focus-within, :active)) {
   position: absolute !important;
   clip-path: inset(50%) !important;

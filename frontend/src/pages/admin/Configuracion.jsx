@@ -10,14 +10,39 @@ export default function Configuracion() {
     horario_atencion: "",
     reserva_minutos_defecto: 15,
   });
+
+  const [nequi, setNequi] = useState({
+    medio: "NEQUI",
+    titular: "",
+    numero_celular: "",
+    entidad: "Nequi",
+    llave: "",
+    activo: true,
+  });
+
+  const [breb, setBreb] = useState({
+    medio: "BREB",
+    titular: "",
+    numero_celular: "",
+    entidad: "Bre-B",
+    llave: "",
+    activo: true,
+  });
+
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     configService
       .getPublic()
       .then((res) => {
         if (res.data?.general) setGeneral(res.data.general);
+        const medios = res.data?.medios_pago || [];
+        const foundNequi = medios.find((m) => m.medio === "NEQUI");
+        const foundBreb = medios.find((m) => m.medio === "BREB");
+        if (foundNequi) setNequi((prev) => ({ ...prev, ...foundNequi, activo: true }));
+        if (foundBreb) setBreb((prev) => ({ ...prev, ...foundBreb, activo: true }));
       })
       .catch((err) => setError(err.message));
   }, []);
@@ -26,33 +51,162 @@ export default function Configuracion() {
     e.preventDefault();
     setMessage("");
     setError("");
+    setBusy(true);
     try {
       await configService.updateGeneralAdmin(general);
       setMessage("Configuración de WhatsApp y parámetros guardada correctamente.");
     } catch (err) {
       setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleSaveMedio = async (e, payload, label) => {
+    e.preventDefault();
+    setMessage("");
+    setError("");
+    setBusy(true);
+    try {
+      await configService.updatePagosAdmin(payload);
+      setMessage(`Datos de ${label} guardados correctamente.`);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
     }
   };
 
   return (
-    <div className="max-w-2xl space-y-6">
-      <h1 className="font-extrabold text-slate-900">Configuración general y WhatsApp</h1>
+    <div className="max-w-3xl space-y-6">
+      <div>
+        <h1 className="font-extrabold text-slate-900">Configuración de pagos y WhatsApp</h1>
+        <p className="mt-1 text-sm text-slate-600">
+          Estos datos se muestran a los participantes en la pantalla de transferencia.
+        </p>
+      </div>
 
       {message ? (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-sm text-emerald-800">
           {message}
         </div>
       ) : null}
       {error ? (
-        <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">
+        <div
+          role="alert"
+          className="rounded-xl border border-rose-200 bg-rose-50 p-3.5 text-sm text-rose-800"
+        >
           {error}
         </div>
       ) : null}
 
+      {/* Medios de pago Nequi y Bre-B */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <form
+          onSubmit={(e) => handleSaveMedio(e, nequi, "Nequi")}
+          className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5"
+        >
+          <h2 className="text-base font-bold text-slate-900">Nequi</h2>
+          <div>
+            <label htmlFor="nequi-titular" className="mb-1 block text-xs font-semibold">
+              Titular
+            </label>
+            <input
+              id="nequi-titular"
+              type="text"
+              value={nequi.titular || ""}
+              onChange={(e) => setNequi({ ...nequi, titular: e.target.value })}
+              className="w-full rounded-xl border border-slate-300 px-3 py-2"
+            />
+          </div>
+          <div>
+            <label htmlFor="nequi-cel" className="mb-1 block text-xs font-semibold">
+              Número Nequi
+            </label>
+            <input
+              id="nequi-cel"
+              type="tel"
+              inputMode="numeric"
+              value={nequi.numero_celular || ""}
+              onChange={(e) => setNequi({ ...nequi, numero_celular: e.target.value })}
+              placeholder="3001234567"
+              className="w-full rounded-xl border border-slate-300 px-3 py-2"
+            />
+          </div>
+          <label className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+            <input
+              type="checkbox"
+              checked={Boolean(nequi.activo)}
+              onChange={(e) => setNequi({ ...nequi, activo: e.target.checked })}
+              className="h-4 w-4 accent-emerald-600"
+            />
+            Habilitado en la pantalla de pago
+          </label>
+          <button
+            type="submit"
+            disabled={busy}
+            className="min-h-11 w-full rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white hover:bg-slate-800"
+          >
+            Guardar Nequi
+          </button>
+        </form>
+
+        <form
+          onSubmit={(e) => handleSaveMedio(e, breb, "Bre-B")}
+          className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5"
+        >
+          <h2 className="text-base font-bold text-slate-900">Bre-B</h2>
+          <div>
+            <label htmlFor="breb-titular" className="mb-1 block text-xs font-semibold">
+              Titular
+            </label>
+            <input
+              id="breb-titular"
+              type="text"
+              value={breb.titular || ""}
+              onChange={(e) => setBreb({ ...breb, titular: e.target.value })}
+              className="w-full rounded-xl border border-slate-300 px-3 py-2"
+            />
+          </div>
+          <div>
+            <label htmlFor="breb-llave" className="mb-1 block text-xs font-semibold">
+              Llave Bre-B
+            </label>
+            <input
+              id="breb-llave"
+              type="text"
+              value={breb.llave || ""}
+              onChange={(e) => setBreb({ ...breb, llave: e.target.value })}
+              placeholder="@llave o correo/celular"
+              className="w-full rounded-xl border border-slate-300 px-3 py-2"
+            />
+          </div>
+          <label className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+            <input
+              type="checkbox"
+              checked={Boolean(breb.activo)}
+              onChange={(e) => setBreb({ ...breb, activo: e.target.checked })}
+              className="h-4 w-4 accent-emerald-600"
+            />
+            Habilitado en la pantalla de pago
+          </label>
+          <button
+            type="submit"
+            disabled={busy}
+            className="min-h-11 w-full rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white hover:bg-slate-800"
+          >
+            Guardar Bre-B
+          </button>
+        </form>
+      </div>
+
+      {/* WhatsApp y parámetros generales */}
       <form
         onSubmit={handleSaveGeneral}
         className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5"
       >
+        <h2 className="text-base font-bold text-slate-900">WhatsApp y textos</h2>
+
         <div>
           <label htmlFor="wa-comp" className="block text-sm font-semibold text-slate-800">
             WhatsApp de comprobantes (formato internacional sin +) *
@@ -106,9 +260,10 @@ export default function Configuracion() {
 
         <button
           type="submit"
-          className="min-h-12 w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white hover:bg-slate-800 sm:w-auto"
+          disabled={busy}
+          className="min-h-12 w-full rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white hover:bg-emerald-700 sm:w-auto"
         >
-          Guardar configuración
+          Guardar WhatsApp
         </button>
       </form>
     </div>

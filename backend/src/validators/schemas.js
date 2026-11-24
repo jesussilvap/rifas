@@ -71,9 +71,9 @@ export const createRifaSchema = z.object({
   loteria_mecanismo: z.string().trim().max(200).optional().nullable(),
   reglamento_url: z.string().trim().max(500).optional().nullable(),
   reglamento_version: z.string().trim().max(50).optional().nullable(),
-  fecha_inicio: z.string().datetime().optional().nullable(),
-  fecha_cierre: z.string().datetime().optional().nullable(),
-  fecha_sorteo: z.string().datetime().optional().nullable(),
+  fecha_inicio: z.string().optional().nullable(),
+  fecha_cierre: z.string().optional().nullable(),
+  fecha_sorteo: z.string().optional().nullable(),
   reserva_minutos: z.coerce.number().int().min(5).max(120).default(15),
 });
 
@@ -87,6 +87,38 @@ export const updateRifaEstadoSchema = z.object({
     "FINALIZADA",
     "CANCELADA",
   ]),
+});
+
+export const updateRifaSchema = z.object({
+  titulo: z.string().trim().min(3).max(200).optional(),
+  descripcion: z.string().trim().optional().nullable(),
+  categoria: z.string().trim().max(100).optional().nullable(),
+  precio_numero: z.coerce.number().positive().optional(),
+  loteria_mecanismo: z.string().trim().max(200).optional().nullable(),
+  reglamento_url: z.string().trim().max(500).optional().nullable(),
+  reglamento_version: z.string().trim().max(50).optional().nullable(),
+  fecha_inicio: z.string().optional().nullable(),
+  fecha_cierre: z.string().optional().nullable(),
+  fecha_sorteo: z.string().optional().nullable(),
+  reserva_minutos: z.coerce.number().int().min(5).max(120).optional(),
+});
+
+export const createPremioSchema = z.object({
+  nombre: z.string().trim().min(2, "Nombre del premio obligatorio").max(200),
+  marca: z.string().trim().max(100).optional().nullable(),
+  modelo: z.string().trim().max(150).optional().nullable(),
+  descripcion: z.string().trim().max(2000).optional().nullable(),
+  cantidad: z.coerce.number().int().min(1).default(1),
+  valor_comercial: z.coerce.number().nonnegative().optional().nullable(),
+});
+
+export const upsertAutorizacionSchema = z.object({
+  operador: z.string().trim().min(2, "Operador obligatorio").max(200),
+  entidad_autorizadora: z.string().trim().min(2, "Entidad autorizadora obligatoria").max(200),
+  numero_resolucion: z.string().trim().min(2, "Número de resolución obligatorio").max(100),
+  fecha_autorizacion: z.string().trim().optional().nullable(),
+  documento_url: z.string().trim().max(500).optional().nullable(),
+  estado: z.enum(["PENDIENTE", "APROBADA", "RECHAZADA"]).default("APROBADA"),
 });
 
 export const updateConfigPagosSchema = z.object({

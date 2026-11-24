@@ -45,6 +45,20 @@ export const rifasService = {
   listAdmin: () => apiRequest("/admin/rifas"),
   createAdmin: (body) =>
     apiRequest("/admin/rifas", { method: "POST", body: JSON.stringify(body) }),
+  updateAdmin: (id, body) =>
+    apiRequest(`/admin/rifas/${id}`, { method: "PUT", body: JSON.stringify(body) }),
+  uploadImageAdmin: (id, formData) =>
+    apiRequest(`/admin/rifas/${id}/imagen`, { method: "POST", body: formData }),
+  createPremioAdmin: (id, body) =>
+    apiRequest(`/admin/rifas/${id}/premios`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+  saveAutorizacionAdmin: (id, body) =>
+    apiRequest(`/admin/rifas/${id}/autorizaciones`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
   changeStatusAdmin: (id, estado) =>
     apiRequest(`/admin/rifas/${id}/estado`, {
       method: "PATCH",

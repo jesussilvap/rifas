@@ -12,10 +12,15 @@ import {
   meAdmin,
 } from "../controllers/adminController.js";
 import {
+  actualizarRifaAdmin,
   cambiarEstadoRifaAdmin,
+  crearPremioAdmin,
   crearRifaAdmin,
   listarRifasAdmin,
+  registrarAutorizacionAdmin,
+  subirImagenRifaAdmin,
 } from "../controllers/rifaController.js";
+import { uploadSingleImage } from "../middlewares/uploadMiddleware.js";
 import { liberarNumerosManualAdmin } from "../controllers/numeroController.js";
 import {
   aprobarPagoAdmin,
@@ -53,6 +58,23 @@ router.get("/dashboard", requireRoles("SUPER_ADMIN", "ADMIN", "OPERADOR"), dashb
 
 router.get("/rifas", requireRoles("SUPER_ADMIN", "ADMIN", "OPERADOR"), listarRifasAdmin);
 router.post("/rifas", requireRoles("SUPER_ADMIN", "ADMIN"), crearRifaAdmin);
+router.put("/rifas/:id", requireRoles("SUPER_ADMIN", "ADMIN"), actualizarRifaAdmin);
+router.post(
+  "/rifas/:id/imagen",
+  requireRoles("SUPER_ADMIN", "ADMIN"),
+  ...uploadSingleImage("imagen"),
+  subirImagenRifaAdmin
+);
+router.post(
+  "/rifas/:id/premios",
+  requireRoles("SUPER_ADMIN", "ADMIN"),
+  crearPremioAdmin
+);
+router.post(
+  "/rifas/:id/autorizaciones",
+  requireRoles("SUPER_ADMIN", "ADMIN"),
+  registrarAutorizacionAdmin
+);
 router.patch(
   "/rifas/:id/estado",
   requireRoles("SUPER_ADMIN", "ADMIN"),
