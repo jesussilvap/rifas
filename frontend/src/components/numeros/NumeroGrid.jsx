@@ -3,10 +3,10 @@ import { formatCOP } from "../../utils/format.js";
 
 /**
  * Cuadrícula responsiva Mobile-First:
- * - Disponible: Magenta (#C9349B)
- * - Seleccionado: Deep Violet (#3B146B)
- * - Pendiente: Warm Yellow (#FFB458)
- * - Vendido: Coral Pink (#F36A78)
+ * - Disponible: Deep Violet (#3B146B)
+ * - Seleccionado: Magenta (#C9349B)
+ * - Pendiente: Coral Pink (#F36A78)
+ * - Vendido: Warm Yellow (#FFB458)
  */
 export function NumeroGrid({
   numeros = [],
@@ -30,28 +30,28 @@ export function NumeroGrid({
       <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-700">
         <span className="inline-flex items-center gap-1.5">
           <span
-            className="h-3.5 w-3.5 rounded bg-[#C9349B]"
+            className="h-3.5 w-3.5 rounded bg-[#3B146B]"
             aria-hidden="true"
           />
           Disponible
         </span>
         <span className="inline-flex items-center gap-1.5">
           <span
-            className="h-3.5 w-3.5 rounded bg-[#3B146B]"
+            className="h-3.5 w-3.5 rounded bg-[#C9349B]"
             aria-hidden="true"
           />
           Seleccionado
         </span>
         <span className="inline-flex items-center gap-1.5">
           <span
-            className="h-3.5 w-3.5 rounded bg-[#FFB458]"
+            className="h-3.5 w-3.5 rounded bg-[#F36A78]"
             aria-hidden="true"
           />
           Pendiente
         </span>
         <span className="inline-flex items-center gap-1.5">
           <span
-            className="h-3.5 w-3.5 rounded bg-[#F36A78]"
+            className="h-3.5 w-3.5 rounded bg-[#FFB458]"
             aria-hidden="true"
           />
           Vendido
@@ -110,23 +110,23 @@ export function NumeroGrid({
             const isAvailable = item.estado === "DISPONIBLE";
 
             let classes =
-              "border-[#A82780] bg-[#C9349B] text-white hover:bg-[#B22B88]";
+              "border-[#260A49] bg-[#3B146B] text-white hover:bg-[#4E1C8A]";
             let statusText = "Disponible";
             let icon = null;
 
             if (isSelected) {
               classes =
-                "border-[#260A49] bg-[#3B146B] text-white ring-2 ring-[#C9349B]";
+                "border-[#A82780] bg-[#C9349B] text-white ring-2 ring-[#3B146B]";
               statusText = "Seleccionado";
               icon = <Check className="h-3.5 w-3.5" aria-hidden="true" />;
             } else if (item.estado === "PENDIENTE") {
               classes =
-                "border-[#E59B3E] bg-[#FFB458] text-[#3B146B] cursor-not-allowed";
+                "border-[#DC5462] bg-[#F36A78] text-[#240A3E] cursor-not-allowed";
               statusText = "Pendiente";
               icon = <Clock className="h-3 w-3" aria-hidden="true" />;
             } else if (item.estado === "VENDIDO") {
               classes =
-                "border-[#DC5462] bg-[#F36A78] text-[#240A3E] cursor-not-allowed";
+                "border-[#E59B3E] bg-[#FFB458] text-[#3B146B] cursor-not-allowed";
               statusText = "Vendido";
               icon = <Lock className="h-3 w-3" aria-hidden="true" />;
             }

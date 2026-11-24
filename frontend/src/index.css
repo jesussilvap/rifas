@@ -8,10 +8,10 @@
   --target-size: 24px;
   --header-height: 4rem;
   --sticky-bar-offset: 5.5rem;
-  --color-state-available: #C9349B;
-  --color-state-selected: #3B146B;
-  --color-state-pending: #FFB458;
-  --color-state-sold: #F36A78;
+  --color-state-available: #3B146B;
+  --color-state-selected: #C9349B;
+  --color-state-pending: #F36A78;
+  --color-state-sold: #FFB458;
 }
 
 @media (pointer: coarse) {
