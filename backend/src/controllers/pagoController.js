@@ -130,15 +130,17 @@ export async function servirComprobantePrivadoAdmin(req, res, next) {
       throw new AppError("Archivo de comprobante no disponible", 404, "FILE_MISSING");
     }
 
-    // Registrar acceso en auditoría (Sección 10.3)
-    await pool.query(
-      `INSERT INTO auditoria (id_usuario, accion, tabla_afectada, registro_id, detalle)
-       VALUES (?, 'CONSULTAR_COMPROBANTE', 'pagos', ?, ?)`,
-      [req.user.id, pago.id, JSON.stringify({ codigo_pago: pago.codigo })]
-    );
+    // Registrar acceso en auditoría en segundo plano para no retrasar la entrega de la imagen
+    pool
+      .query(
+        `INSERT INTO auditoria (id_usuario, accion, tabla_afectada, registro_id, detalle)
+         VALUES (?, 'CONSULTAR_COMPROBANTE', 'pagos', ?, ?)`,
+        [req.user.id, pago.id, JSON.stringify({ codigo_pago: pago.codigo })]
+      )
+      .catch(() => {});
 
     res.setHeader("Content-Type", pago.comprobante_mime || "image/webp");
-    res.setHeader("Cache-Control", "private, no-store");
+    res.setHeader("Cache-Control", "private, max-age=300");
     res.sendFile(filePath);
   } catch (error) {
     next(error);

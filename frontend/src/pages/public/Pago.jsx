@@ -19,6 +19,7 @@ import {
   formatBogotaDate,
   formatCOP,
 } from "../../utils/format.js";
+import { optimizeImageForUpload } from "../../utils/imageOptimizer.js";
 
 /**
  * Pantalla de pago en 2 pasos (Sección 5.5 y 16.2):
@@ -40,6 +41,7 @@ export function Pago() {
   const [valorReportado, setValorReportado] = useState("");
   const [referencia, setReferencia] = useState("");
   const [file, setFile] = useState(null);
+  const [optimizingImage, setOptimizingImage] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitResult, setSubmitResult] = useState(null);
@@ -86,6 +88,22 @@ export function Pago() {
     if (ok) {
       setCopiedKey(key);
       setTimeout(() => setCopiedKey(""), 2000);
+    }
+  };
+
+  const handleFileChange = async (event) => {
+    const raw = event.target.files?.[0];
+    if (!raw) {
+      setFile(null);
+      return;
+    }
+    setError("");
+    setOptimizingImage(true);
+    try {
+      const optimized = await optimizeImageForUpload(raw);
+      setFile(optimized);
+    } finally {
+      setOptimizingImage(false);
     }
   };
 
@@ -361,16 +379,20 @@ export function Pago() {
               >
                 <Upload className="h-6 w-6 text-emerald-600" aria-hidden="true" />
                 <span className="text-sm font-semibold text-slate-800">
-                  {file ? file.name : "Toca para cargar comprobante (galería o cámara)"}
+                  {optimizingImage
+                    ? "Optimizando imagen para carga rápida..."
+                    : file
+                      ? `${file.name} (${Math.max(1, Math.round(file.size / 1024))} KB)`
+                      : "Toca para cargar comprobante (galería o cámara)"}
                 </span>
                 <span className="text-xs text-slate-500">
-                  Formatos JPG, PNG o WEBP · Máximo 5 MB
+                  Formatos JPG, PNG o WEBP · Compresión automática para móvil
                 </span>
                 <input
                   id="comprobante"
                   type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={(e) => setFile(e.target.files?.[0] || null)}
+                  accept="image/*"
+                  onChange={handleFileChange}
                   className="sr-only"
                 />
               </label>
@@ -388,10 +410,14 @@ export function Pago() {
 
             <button
               type="submit"
-              disabled={submitting || secondsLeft === 0}
+              disabled={submitting || optimizingImage || secondsLeft === 0}
               className="flex min-h-12 w-full items-center justify-center rounded-xl bg-emerald-600 px-6 py-3.5 text-base font-bold text-white transition hover:bg-emerald-700 disabled:bg-slate-300"
             >
-              {submitting ? "Enviando comprobante..." : "Finalizar solicitud"}
+              {submitting
+                ? "Enviando comprobante..."
+                : optimizingImage
+                  ? "Preparando imagen..."
+                  : "Finalizar solicitud"}
             </button>
           </form>
         </>

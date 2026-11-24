@@ -4,6 +4,10 @@ import sharp from "sharp";
 import { env } from "../config/env.js";
 import { AppError } from "../utils/formatters.js";
 
+// Fundamental en hosting compartido (CloudLinux/Hostinger): evita que libvips abra decenas de hilos
+sharp.concurrency(1);
+sharp.cache(false);
+
 const ALLOWED_MIMES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 const upload = multer({
@@ -49,10 +53,16 @@ export function uploadSingleImage(fieldName = "comprobante") {
           );
         }
 
-        // Re-procesar imagen con sharp para validar integridad y eliminar metadatos EXIF
-        const cleanBuffer = await sharp(req.file.buffer)
+        // Redimensionar (máx 1600px), limpiar metadatos EXIF y codificar WebP rápido (effort: 1)
+        const cleanBuffer = await sharp(req.file.buffer, { failOn: "none" })
           .rotate()
-          .webp({ quality: 85 })
+          .resize({
+            width: 1600,
+            height: 1600,
+            fit: "inside",
+            withoutEnlargement: true,
+          })
+          .webp({ quality: 80, effort: 1 })
           .toBuffer();
 
         req.validatedImage = {

@@ -3,6 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import { CheckCircle2, Eye, XCircle } from "lucide-react";
 import { pagosService } from "../../services/api.js";
 import { formatBogotaDate, formatCOP } from "../../utils/format.js";
+import { ModalDialog } from "../../components/common/ModalDialog.jsx";
 
 /**
  * Bandeja responsiva de pagos (Sección 6 y 13.5):
@@ -18,6 +19,8 @@ export default function GestionPagos() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [receiptPago, setReceiptPago] = useState(null);
+  const [receiptLoaded, setReceiptLoaded] = useState(false);
+  const [receiptError, setReceiptError] = useState(false);
   const [rejectTarget, setRejectTarget] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
   const [rejectAction, setRejectAction] = useState("RECHAZADO");
@@ -168,7 +171,11 @@ export default function GestionPagos() {
                     <div className="flex flex-wrap justify-end gap-2">
                       <button
                         type="button"
-                        onClick={() => setReceiptPago(pago)}
+                        onClick={() => {
+                          setReceiptLoaded(false);
+                          setReceiptError(false);
+                          setReceiptPago(pago);
+                        }}
                         className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 hover:bg-slate-50"
                       >
                         <Eye className="h-4 w-4" aria-hidden="true" />
@@ -206,28 +213,46 @@ export default function GestionPagos() {
         </div>
       )}
 
-      {/* Visor privado de comprobante */}
-      {receiptPago ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 p-4">
-          <div className="max-h-[90dvh] w-full max-w-lg overflow-auto rounded-2xl bg-white p-4 shadow-2xl">
-            <div className="mb-3 flex items-center justify-between gap-2">
-              <h2 className="font-bold text-slate-900">Comprobante {receiptPago.codigo}</h2>
-              <button
-                type="button"
-                onClick={() => setReceiptPago(null)}
-                className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold"
+      {/* Visor privado de comprobante con indicador de carga y control de error */}
+      <ModalDialog
+        open={Boolean(receiptPago)}
+        onClose={() => setReceiptPago(null)}
+        title={receiptPago ? `Comprobante ${receiptPago.codigo}` : "Comprobante"}
+      >
+        {receiptPago ? (
+          <div className="space-y-3">
+            {!receiptLoaded && !receiptError ? (
+              <div className="flex h-64 flex-col items-center justify-center gap-2 rounded-xl bg-slate-100 text-sm text-slate-600">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-300 border-t-emerald-600" />
+                <span>Cargando comprobante...</span>
+              </div>
+            ) : null}
+
+            {receiptError ? (
+              <div
+                role="alert"
+                className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800"
               >
-                Cerrar
-              </button>
-            </div>
-            <img
-              src={pagosService.getPrivateReceiptUrl(receiptPago.id)}
-              alt={`Comprobante de ${receiptPago.codigo}`}
-              className="mx-auto max-h-[70dvh] rounded-xl object-contain"
-            />
+                No fue posible cargar la imagen del comprobante. Verifica que el archivo
+                exista en el servidor o solicita el reenvío por WhatsApp.
+              </div>
+            ) : (
+              <img
+                src={pagosService.getPrivateReceiptUrl(receiptPago.id)}
+                alt={`Comprobante de ${receiptPago.codigo}`}
+                onLoad={() => setReceiptLoaded(true)}
+                onError={() => {
+                  setReceiptLoaded(true);
+                  setReceiptError(true);
+                }}
+                className={`mx-auto max-h-[70dvh] rounded-xl object-contain ${
+                  receiptLoaded ? "block" : "hidden"
+                }`}
+              />
+            )}
           </div>
-        </div>
-      ) : null}
+        ) : null}
+      </ModalDialog>
 
       {/* Modal de rechazo con motivo obligatorio */}
       {rejectTarget ? (
