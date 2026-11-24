@@ -21,7 +21,12 @@ import {
   subirImagenRifaAdmin,
 } from "../controllers/rifaController.js";
 import { uploadSingleImage } from "../middlewares/uploadMiddleware.js";
-import { liberarNumerosManualAdmin } from "../controllers/numeroController.js";
+import {
+  detalleNumeroAdmin,
+  exportarInventarioCsvAdmin,
+  liberarNumerosManualAdmin,
+  listarNumerosAdmin,
+} from "../controllers/numeroController.js";
 import {
   aprobarPagoAdmin,
   listarPagosAdmin,
@@ -81,6 +86,21 @@ router.patch(
   cambiarEstadoRifaAdmin
 );
 
+router.get(
+  "/rifas/:id/numeros",
+  requireRoles("SUPER_ADMIN", "ADMIN", "OPERADOR"),
+  listarNumerosAdmin
+);
+router.get(
+  "/rifas/:id/numeros/exportar",
+  requireRoles("SUPER_ADMIN", "ADMIN", "OPERADOR"),
+  exportarInventarioCsvAdmin
+);
+router.get(
+  "/rifas/:id/numeros/:numero",
+  requireRoles("SUPER_ADMIN", "ADMIN", "OPERADOR"),
+  detalleNumeroAdmin
+);
 router.post(
   "/numeros/liberar",
   requireRoles("SUPER_ADMIN", "ADMIN"),

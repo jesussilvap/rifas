@@ -75,6 +75,17 @@ export const numerosService = {
     const qs = query.toString();
     return apiRequest(`/rifas/${rifaId}/numeros${qs ? `?${qs}` : ""}`);
   },
+  listAdminByRifa: (rifaId, params = {}) => {
+    const query = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== "") query.set(k, String(v));
+    });
+    const qs = query.toString();
+    return apiRequest(`/admin/rifas/${rifaId}/numeros${qs ? `?${qs}` : ""}`);
+  },
+  getDetalleAdmin: (rifaId, numero) =>
+    apiRequest(`/admin/rifas/${rifaId}/numeros/${encodeURIComponent(numero)}`),
+  getExportCsvUrl: (rifaId) => `${API_BASE}/admin/rifas/${rifaId}/numeros/exportar`,
   liberarManualAdmin: (body) =>
     apiRequest("/admin/numeros/liberar", {
       method: "POST",
