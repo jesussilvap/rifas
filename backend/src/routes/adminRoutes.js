@@ -28,6 +28,12 @@ import {
   listarNumerosAdmin,
 } from "../controllers/numeroController.js";
 import {
+  listarSorteosAdmin,
+  registrarSorteoAdmin,
+  servirEvidenciaSorteoAdmin,
+  subirEvidenciaSorteoAdmin,
+} from "../controllers/sorteoController.js";
+import {
   aprobarPagoAdmin,
   listarPagosAdmin,
   rechazarPagoAdmin,
@@ -122,6 +128,28 @@ router.patch(
   "/pagos/:id/rechazar",
   requireRoles("SUPER_ADMIN", "ADMIN"),
   rechazarPagoAdmin
+);
+
+router.get(
+  "/sorteos",
+  requireRoles("SUPER_ADMIN", "ADMIN", "OPERADOR"),
+  listarSorteosAdmin
+);
+router.post(
+  "/rifas/:id/sorteo",
+  requireRoles("SUPER_ADMIN", "ADMIN"),
+  registrarSorteoAdmin
+);
+router.post(
+  "/sorteos/:id/evidencia",
+  requireRoles("SUPER_ADMIN", "ADMIN"),
+  ...uploadSingleImage("evidencia"),
+  subirEvidenciaSorteoAdmin
+);
+router.get(
+  "/sorteos/:id/evidencia",
+  requireRoles("SUPER_ADMIN", "ADMIN", "OPERADOR"),
+  servirEvidenciaSorteoAdmin
 );
 
 router.get(

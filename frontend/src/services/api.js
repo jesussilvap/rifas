@@ -145,3 +145,18 @@ export const adminService = {
     apiRequest(`/admin/participantes${q ? `?q=${encodeURIComponent(q)}` : ""}`),
   auditoria: () => apiRequest("/admin/auditoria"),
 };
+
+export const sorteosService = {
+  listAdmin: () => apiRequest("/admin/sorteos"),
+  registerAdmin: (rifaId, body) =>
+    apiRequest(`/admin/rifas/${rifaId}/sorteo`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+  uploadEvidenceAdmin: (sorteoId, formData) =>
+    apiRequest(`/admin/sorteos/${sorteoId}/evidencia`, {
+      method: "POST",
+      body: formData,
+    }),
+  getPrivateEvidenceUrl: (sorteoId) => `${API_BASE}/admin/sorteos/${sorteoId}/evidencia`,
+};

@@ -154,3 +154,13 @@ export const liberarNumerosSchema = z.object({
   numeros: z.array(z.coerce.number().int().min(0)).min(1),
   motivo: z.string().trim().min(5, "Debes indicar el motivo de la liberación"),
 });
+
+export const registrarSorteoSchema = z.object({
+  nombre_loteria: z.string().trim().min(2, "Indica la lotería o mecanismo oficial").max(150),
+  fecha_sorteo: z.string().min(8, "La fecha del sorteo es obligatoria"),
+  resultado_oficial: z.string().trim().min(1, "Ingresa el resultado oficial").max(100),
+  numero_ganador: z.coerce.number().int().min(0),
+  evidencia_url: z.string().trim().max(500).optional().nullable().or(z.literal("")),
+  observaciones: z.string().trim().max(2000).optional().nullable(),
+  finalizar_rifa: z.boolean().default(true),
+});
