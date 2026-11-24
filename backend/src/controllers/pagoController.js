@@ -88,7 +88,7 @@ export async function listarPagosAdmin(req, res, next) {
               pg.referencia_transferencia, pg.estado, pg.observaciones,
               pg.fecha_solicitud, pg.fecha_revision,
               r.codigo AS codigo_reserva, r.cantidad_numeros,
-              rf.titulo AS rifa_titulo, rf.digitos_formato,
+              rf.titulo AS rifa_titulo, rf.digitos_formato, rf.moneda, rf.fecha_sorteo,
               p.nombres_completos AS participante_nombre, p.whatsapp AS participante_whatsapp,
               u.nombre AS revisado_por_nombre,
               GROUP_CONCAT(LPAD(n.numero, rf.digitos_formato, '0') ORDER BY n.numero ASC SEPARATOR ', ') AS numeros

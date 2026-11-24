@@ -1,9 +1,51 @@
 import { useCallback, useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { CheckCircle2, Eye, XCircle } from "lucide-react";
+import {
+  Check,
+  CheckCircle2,
+  Copy,
+  Eye,
+  MessageCircle,
+  XCircle,
+} from "lucide-react";
 import { pagosService } from "../../services/api.js";
-import { formatBogotaDate, formatCOP } from "../../utils/format.js";
+import {
+  buildWhatsappUrl,
+  copyTextSafely,
+  formatBogotaDate,
+  formatCOP,
+} from "../../utils/format.js";
 import { ModalDialog } from "../../components/common/ModalDialog.jsx";
+
+function buildApprovalWhatsapp(pago) {
+  const digits = String(pago?.participante_whatsapp || "").replace(/\D/g, "");
+  const internationalPhone =
+    digits.length === 10 && digits.startsWith("3") ? `57${digits}` : digits;
+  const medioLabel = pago?.medio_pago === "BREB" ? "Bre-B" : "Nequi";
+  const fechaSorteo = pago?.fecha_sorteo
+    ? formatBogotaDate(pago.fecha_sorteo)
+    : "Por confirmar";
+
+  const mensaje = [
+    `¡Hola ${pago?.participante_nombre || ""}! 🎉`,
+    "",
+    "Tu pago ha sido VERIFICADO y APROBADO.",
+    "",
+    `Rifa: ${pago?.rifa_titulo || ""}`,
+    `Números confirmados: ${pago?.numeros || ""}`,
+    `Valor: ${formatCOP(pago?.valor_esperado, pago?.moneda || "COP")} (${medioLabel})`,
+    `Código de confirmación: ${pago?.codigo || ""}`,
+    `Fecha del sorteo: ${fechaSorteo}`,
+    "",
+    "¡Gracias por participar y mucha suerte! 🍀",
+  ].join("\n");
+
+  return {
+    phone: internationalPhone,
+    mensaje,
+    url: buildWhatsappUrl({ whatsappInternacional: internationalPhone, mensaje }),
+  };
+}
 
 /**
  * Bandeja responsiva de pagos (Sección 6 y 13.5):
@@ -24,6 +66,8 @@ export default function GestionPagos() {
   const [rejectTarget, setRejectTarget] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
   const [rejectAction, setRejectAction] = useState("RECHAZADO");
+  const [approvedInfo, setApprovedInfo] = useState(null);
+  const [copiedMsg, setCopiedMsg] = useState(false);
   const [busyId, setBusyId] = useState(null);
 
   const loadPagos = useCallback(() => {
@@ -45,13 +89,24 @@ export default function GestionPagos() {
       return;
     }
     setBusyId(pago.id);
+    setError("");
     try {
-      await pagosService.approveAdmin(pago.id);
+      const res = await pagosService.approveAdmin(pago.id);
+      setCopiedMsg(false);
+      setApprovedInfo(res.data || pago);
       loadPagos();
     } catch (err) {
       setError(err.message);
     } finally {
       setBusyId(null);
+    }
+  };
+
+  const handleCopyApprovedMessage = async (text) => {
+    const ok = await copyTextSafely(text);
+    if (ok) {
+      setCopiedMsg(true);
+      setTimeout(() => setCopiedMsg(false), 2000);
     }
   };
 
@@ -181,6 +236,19 @@ export default function GestionPagos() {
                         <Eye className="h-4 w-4" aria-hidden="true" />
                         Comprobante
                       </button>
+                      {pago.estado === "APROBADO" ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCopiedMsg(false);
+                            setApprovedInfo(pago);
+                          }}
+                          className="inline-flex min-h-11 items-center gap-1 rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-brand-700"
+                        >
+                          <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                          WhatsApp
+                        </button>
+                      ) : null}
                       {canDecide &&
                       (pago.estado === "PENDIENTE" || pago.estado === "REQUIERE_REVISION") ? (
                         <>
@@ -314,6 +382,66 @@ export default function GestionPagos() {
           </form>
         </div>
       ) : null}
+
+      {/* Modal de confirmación por WhatsApp tras aprobar pago */}
+      <ModalDialog
+        open={Boolean(approvedInfo)}
+        onClose={() => setApprovedInfo(null)}
+        title="¡Pago aprobado! Enviar confirmación"
+      >
+        {approvedInfo
+          ? (() => {
+              const wa = buildApprovalWhatsapp(approvedInfo);
+              return (
+                <div className="space-y-4">
+                  <div className="rounded-xl border border-brand-200 bg-brand-50 p-3.5 text-sm text-brand-900">
+                    El pago <strong className="font-mono">{approvedInfo.codigo}</strong> fue
+                    aprobado y los números ya aparecen como <strong>VENDIDOS</strong>.
+                  </div>
+
+                  <div>
+                    <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      Mensaje listo para {approvedInfo.participante_nombre} (
+                      {approvedInfo.participante_whatsapp})
+                    </p>
+                    <pre className="whitespace-pre-wrap rounded-xl border border-slate-200 bg-slate-50 p-3.5 font-sans text-xs text-slate-800">
+                      {wa.mensaje}
+                    </pre>
+                  </div>
+
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <a
+                      href={wa.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-brand-700"
+                    >
+                      <MessageCircle className="h-5 w-5" aria-hidden="true" />
+                      Enviar por WhatsApp
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyApprovedMessage(wa.mensaje)}
+                      className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+                    >
+                      {copiedMsg ? (
+                        <>
+                          <Check className="h-4 w-4 text-brand-600" aria-hidden="true" />
+                          Copiado
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-4 w-4" aria-hidden="true" />
+                          Copiar mensaje
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              );
+            })()
+          : null}
+      </ModalDialog>
     </div>
   );
 }

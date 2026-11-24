@@ -145,7 +145,7 @@ export async function reportarPago({
 export async function aprobarPago({ pagoId, adminUserId, referenciaTransferencia, observaciones }) {
   return withTransaction(async (conn) => {
     const [pagos] = await conn.query(
-      `SELECT p.id, p.codigo, p.id_reserva, p.estado, p.valor_esperado, p.valor_reportado
+      `SELECT p.id, p.codigo, p.id_reserva, p.medio_pago, p.estado, p.valor_esperado, p.valor_reportado
        FROM pagos p
        WHERE p.id = ?
        FOR UPDATE`,
@@ -169,12 +169,20 @@ export async function aprobarPago({ pagoId, adminUserId, referenciaTransferencia
     }
 
     const [reservas] = await conn.query(
-      "SELECT id, estado FROM reservas WHERE id = ? FOR UPDATE",
+      `SELECT r.id, r.estado,
+              rf.titulo AS rifa_titulo, rf.moneda, rf.digitos_formato, rf.fecha_sorteo,
+              p.nombres_completos AS participante_nombre, p.whatsapp AS participante_whatsapp
+       FROM reservas r
+       INNER JOIN rifas rf ON rf.id = r.id_rifa
+       INNER JOIN participantes p ON p.id = r.id_participante
+       WHERE r.id = ?
+       FOR UPDATE`,
       [pago.id_reserva]
     );
     if (reservas.length === 0) {
       throw new AppError("Reserva asociada no encontrada", 404, "RESERVATION_NOT_FOUND");
     }
+    const reservaInfo = reservas[0];
 
     const [rnRows] = await conn.query(
       `SELECT n.id, n.numero, n.estado, n.id_reserva
@@ -238,6 +246,16 @@ export async function aprobarPago({ pagoId, adminUserId, referenciaTransferencia
       id: pago.id,
       codigo: pago.codigo,
       estado: "APROBADO",
+      medio_pago: pago.medio_pago,
+      valor_esperado: Number(pago.valor_esperado),
+      rifa_titulo: reservaInfo.rifa_titulo,
+      moneda: reservaInfo.moneda,
+      fecha_sorteo: reservaInfo.fecha_sorteo,
+      participante_nombre: reservaInfo.participante_nombre,
+      participante_whatsapp: reservaInfo.participante_whatsapp,
+      numeros: rnRows
+        .map((n) => formatNumero(n.numero, reservaInfo.digitos_formato))
+        .join(", "),
       numeros_vendidos: rnRows.length,
     };
   });
