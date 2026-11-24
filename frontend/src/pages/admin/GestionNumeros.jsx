@@ -178,7 +178,7 @@ export default function GestionNumeros() {
       </div>
 
       {notice ? (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-sm text-emerald-900">
+        <div className="rounded-xl border border-brand-200 bg-brand-50 p-3.5 text-sm text-brand-900">
           {notice}
         </div>
       ) : null}
@@ -287,9 +287,9 @@ export default function GestionNumeros() {
               <p className="text-xs text-slate-500">Total</p>
               <p className="text-xl font-extrabold text-slate-900">{resumen.total || 0}</p>
             </div>
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3.5">
-              <p className="text-xs text-emerald-800">Disponibles</p>
-              <p className="text-xl font-extrabold text-emerald-700">
+            <div className="rounded-xl border border-brand-200 bg-brand-50 p-3.5">
+              <p className="text-xs text-brand-800">Disponibles</p>
+              <p className="text-xl font-extrabold text-brand-700">
                 {resumen.disponibles || 0}
               </p>
             </div>
@@ -447,7 +447,7 @@ export default function GestionNumeros() {
                 </p>
               </div>
             ) : (
-              <p className="rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-sm text-emerald-900">
+              <p className="rounded-xl border border-brand-200 bg-brand-50 p-3.5 text-sm text-brand-900">
                 Este número está <strong>DISPONIBLE</strong> y no tiene reserva activa.
               </p>
             )}

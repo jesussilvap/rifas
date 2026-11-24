@@ -1,5 +1,19 @@
 @import "tailwindcss";
 
+@theme {
+  --color-brand-50: #eef7ff;
+  --color-brand-100: #d9edff;
+  --color-brand-200: #bce0ff;
+  --color-brand-300: #8ecaff;
+  --color-brand-400: #59adff;
+  --color-brand-500: #268df5;
+  --color-brand-600: #0070D1;
+  --color-brand-700: #005bb0;
+  --color-brand-800: #00498f;
+  --color-brand-900: #063c73;
+  --color-brand-950: #04264a;
+}
+
 /* ==========================================================================
    Estilos base responsivos Mobile-First (guías modern-web-guidance)
    ========================================================================== */
@@ -126,7 +140,7 @@ li {
 }
 
 .field-input:user-valid {
-  border-color: #16a34a;
+  border-color: #0070D1;
 }
 
 .field-error {

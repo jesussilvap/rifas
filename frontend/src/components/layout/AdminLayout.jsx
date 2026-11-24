@@ -77,7 +77,7 @@ export function AdminLayout() {
               className={({ isActive }) =>
                 `flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium transition ${
                   isActive
-                    ? "bg-emerald-600 text-white"
+                    ? "bg-brand-600 text-white"
                     : "text-slate-300 hover:bg-slate-800 hover:text-white"
                 }`
               }

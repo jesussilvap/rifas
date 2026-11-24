@@ -77,7 +77,7 @@ export function Rifas() {
 
                 <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                    <span className="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-semibold text-brand-700">
                       {rifa.categoria || "General"}
                     </span>
                     <span className="text-base font-extrabold text-slate-900">
@@ -97,7 +97,7 @@ export function Rifas() {
                     </div>
                     <div className="h-2 overflow-hidden rounded-full bg-slate-200">
                       <div
-                        className="h-full rounded-full bg-emerald-600"
+                        className="h-full rounded-full bg-brand-600"
                         style={{ width: `${progreso}%` }}
                       />
                     </div>

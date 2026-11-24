@@ -145,7 +145,7 @@ export default function Sorteos() {
           <button
             type="button"
             onClick={openModal}
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-emerald-700"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-brand-700"
           >
             <Plus className="h-5 w-5" aria-hidden="true" />
             Registrar resultado
@@ -154,7 +154,7 @@ export default function Sorteos() {
       </div>
 
       {notice ? (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-sm text-emerald-900">
+        <div className="rounded-xl border border-brand-200 bg-brand-50 p-3.5 text-sm text-brand-900">
           {notice}
         </div>
       ) : null}
@@ -222,9 +222,9 @@ export default function Sorteos() {
                   </div>
 
                   {isSoldWinner ? (
-                    <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-950">
+                    <div className="flex items-start gap-2 rounded-xl border border-brand-200 bg-brand-50 p-3 text-xs text-brand-950">
                       <CheckCircle2
-                        className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700"
+                        className="mt-0.5 h-4 w-4 shrink-0 text-brand-700"
                         aria-hidden="true"
                       />
                       <div>
@@ -233,7 +233,7 @@ export default function Sorteos() {
                           {s.ganador_nombre} ·{" "}
                           <span className="font-mono">{s.ganador_whatsapp}</span>
                         </p>
-                        <p className="mt-0.5 text-emerald-800">
+                        <p className="mt-0.5 text-brand-800">
                           Reserva: <span className="font-mono">{s.reserva_codigo}</span>
                         </p>
                       </div>
@@ -428,7 +428,7 @@ export default function Sorteos() {
               type="checkbox"
               checked={form.finalizar_rifa}
               onChange={(e) => setForm({ ...form, finalizar_rifa: e.target.checked })}
-              className="h-5 w-5 accent-emerald-600"
+              className="h-5 w-5 accent-brand-600"
             />
             <span>Marcar automáticamente la rifa como FINALIZADA</span>
           </label>
@@ -444,7 +444,7 @@ export default function Sorteos() {
             <button
               type="submit"
               disabled={busy}
-              className="flex-1 rounded-xl bg-emerald-600 py-3 text-sm font-bold text-white hover:bg-emerald-700 disabled:bg-slate-300"
+              className="flex-1 rounded-xl bg-brand-600 py-3 text-sm font-bold text-white hover:bg-brand-700 disabled:bg-slate-300"
             >
               {busy ? "Registrando..." : "Guardar resultado"}
             </button>

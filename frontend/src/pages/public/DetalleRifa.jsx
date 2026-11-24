@@ -133,7 +133,7 @@ export function DetalleRifa() {
 
         <div className="space-y-4 lg:col-span-6">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
+            <span className="rounded-full bg-brand-100 px-3 py-1 text-xs font-semibold text-brand-800">
               {rifa.categoria || "Rifa"}
             </span>
             <span className="rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-700">
@@ -149,7 +149,7 @@ export function DetalleRifa() {
           <div className="grid grid-cols-2 gap-3 rounded-2xl border border-slate-200 bg-white p-4">
             <div>
               <p className="text-xs text-slate-500">Valor por número</p>
-              <p className="text-xl font-extrabold text-emerald-700">
+              <p className="text-xl font-extrabold text-brand-700">
                 {formatCOP(rifa.precio_numero, rifa.moneda)}
               </p>
             </div>
@@ -248,7 +248,7 @@ export function DetalleRifa() {
                 data-error="nombres-error"
                 value={form.nombres_completos}
                 onChange={(e) => setForm({ ...form, nombres_completos: e.target.value })}
-                className="field-input w-full rounded-xl border border-slate-300 px-3 py-2.5 text-slate-900 focus:border-emerald-600 focus:outline-none"
+                className="field-input w-full rounded-xl border border-slate-300 px-3 py-2.5 text-slate-900 focus:border-brand-600 focus:outline-none"
               />
               <p id="nombres-error" className="field-error mt-1 items-center gap-1 text-xs text-rose-700">
                 Ingresa al menos 3 caracteres para tu nombre completo.
@@ -274,7 +274,7 @@ export function DetalleRifa() {
                 data-error="whatsapp-error"
                 value={form.whatsapp}
                 onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
-                className="field-input w-full rounded-xl border border-slate-300 px-3 py-2.5 text-slate-900 focus:border-emerald-600 focus:outline-none"
+                className="field-input w-full rounded-xl border border-slate-300 px-3 py-2.5 text-slate-900 focus:border-brand-600 focus:outline-none"
               />
               <p id="whatsapp-error" className="field-error mt-1 items-center gap-1 text-xs text-rose-700">
                 Ingresa un número de WhatsApp válido (10 a 15 dígitos).
@@ -291,7 +291,7 @@ export function DetalleRifa() {
                 onChange={(e) =>
                   setForm({ ...form, acepta_reglamento: e.target.checked })
                 }
-                className="mt-1 h-5 w-5 shrink-0 accent-emerald-600"
+                className="mt-1 h-5 w-5 shrink-0 accent-brand-600"
               />
               <span>
                 Acepto el reglamento de la rifa{" "}
@@ -306,7 +306,7 @@ export function DetalleRifa() {
                 required
                 checked={form.autoriza_datos}
                 onChange={(e) => setForm({ ...form, autoriza_datos: e.target.checked })}
-                className="mt-1 h-5 w-5 shrink-0 accent-emerald-600"
+                className="mt-1 h-5 w-5 shrink-0 accent-brand-600"
               />
               <span>
                 Autorizo el tratamiento de mis datos personales para gestionar mi
@@ -318,7 +318,7 @@ export function DetalleRifa() {
           <button
             type="submit"
             disabled={submitting || selected.length === 0}
-            className="flex min-h-12 w-full items-center justify-center rounded-xl bg-emerald-600 px-6 py-3 text-base font-bold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+            className="flex min-h-12 w-full items-center justify-center rounded-xl bg-brand-600 px-6 py-3 text-base font-bold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-slate-300"
           >
             {submitting
               ? "Reservando números..."
@@ -344,7 +344,7 @@ export function DetalleRifa() {
                   {selected.length > 6 ? "…" : ""}
                 </strong>
               </p>
-              <p className="text-base font-extrabold text-emerald-700">
+              <p className="text-base font-extrabold text-brand-700">
                 {formatCOP(totalEstimado, rifa.moneda)}
               </p>
             </div>

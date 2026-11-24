@@ -55,7 +55,7 @@ export default function Dashboard() {
             key={card.label}
             className={`rounded-2xl border p-4 sm:p-5 ${
               card.verified
-                ? "border-emerald-200 bg-emerald-50"
+                ? "border-brand-200 bg-brand-50"
                 : card.highlight
                   ? "border-amber-200 bg-amber-50"
                   : "border-slate-200 bg-white"

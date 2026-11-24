@@ -188,7 +188,7 @@ export default function GestionPagos() {
                             type="button"
                             disabled={busyId === pago.id}
                             onClick={() => handleApprove(pago)}
-                            className="inline-flex min-h-11 items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700 disabled:opacity-50"
+                            className="inline-flex min-h-11 items-center gap-1 rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-brand-700 disabled:opacity-50"
                           >
                             <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
                             Aprobar
@@ -223,7 +223,7 @@ export default function GestionPagos() {
           <div className="space-y-3">
             {!receiptLoaded && !receiptError ? (
               <div className="flex h-64 flex-col items-center justify-center gap-2 rounded-xl bg-slate-100 text-sm text-slate-600">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-300 border-t-emerald-600" />
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-300 border-t-brand-600" />
                 <span>Cargando comprobante...</span>
               </div>
             ) : null}

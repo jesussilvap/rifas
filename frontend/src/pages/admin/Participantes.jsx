@@ -59,7 +59,7 @@ export default function Participantes() {
                 <td data-label="Reservas" className="px-4 py-3">
                   {p.total_reservas}
                 </td>
-                <td data-label="Números comprados" className="px-4 py-3 font-bold text-emerald-700">
+                <td data-label="Números comprados" className="px-4 py-3 font-bold text-brand-700">
                   {p.numeros_comprados}
                 </td>
               </tr>

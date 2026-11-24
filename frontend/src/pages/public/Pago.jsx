@@ -197,7 +197,7 @@ export function Pago() {
           </div>
           <div>
             <dt className="text-xs text-slate-500">Total a transferir</dt>
-            <dd className="text-lg font-extrabold text-emerald-700">
+            <dd className="text-lg font-extrabold text-brand-700">
               {formatCOP(reserva.valor_total, reserva.rifa?.moneda)}
             </dd>
           </div>
@@ -215,9 +215,9 @@ export function Pago() {
 
       {/* PASO 2: Confirmación y envío por WhatsApp */}
       {isStep2 ? (
-        <section className="space-y-4 rounded-2xl border border-emerald-200 bg-white p-5 sm:p-6">
+        <section className="space-y-4 rounded-2xl border border-brand-200 bg-white p-5 sm:p-6">
           <div className="flex items-start gap-3">
-            <CheckCircle2 className="h-7 w-7 shrink-0 text-emerald-600" aria-hidden="true" />
+            <CheckCircle2 className="h-7 w-7 shrink-0 text-brand-600" aria-hidden="true" />
             <div>
               <h2 className="text-lg font-extrabold text-slate-900">
                 ¡Solicitud registrada!
@@ -243,7 +243,7 @@ export function Pago() {
             href={whatsappInfo?.url || fallbackWaUrl || "#"}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3.5 text-base font-bold text-white transition hover:bg-emerald-700"
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-3.5 text-base font-bold text-white transition hover:bg-brand-700"
           >
             <MessageCircle className="h-5 w-5" aria-hidden="true" />
             Enviar comprobante por WhatsApp
@@ -269,7 +269,7 @@ export function Pago() {
                     className="flex flex-col justify-between rounded-xl border border-slate-200 bg-slate-50 p-4"
                   >
                     <div className="space-y-1">
-                      <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">
+                      <p className="text-xs font-bold uppercase tracking-wide text-brand-700">
                         {medio.medio === "BREB" ? "Bre-B" : "Nequi"}
                       </p>
                       {medio.titular ? (
@@ -299,7 +299,7 @@ export function Pago() {
                       >
                         {copiedKey === copyId ? (
                           <>
-                            <Check className="h-4 w-4 text-emerald-600" aria-hidden="true" />
+                            <Check className="h-4 w-4 text-brand-600" aria-hidden="true" />
                             Copiado
                           </>
                         ) : (
@@ -375,9 +375,9 @@ export function Pago() {
             <div>
               <label
                 htmlFor="comprobante"
-                className="flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 p-4 text-center hover:border-emerald-500"
+                className="flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 p-4 text-center hover:border-brand-500"
               >
-                <Upload className="h-6 w-6 text-emerald-600" aria-hidden="true" />
+                <Upload className="h-6 w-6 text-brand-600" aria-hidden="true" />
                 <span className="text-sm font-semibold text-slate-800">
                   {optimizingImage
                     ? "Optimizando imagen para carga rápida..."
@@ -411,7 +411,7 @@ export function Pago() {
             <button
               type="submit"
               disabled={submitting || optimizingImage || secondsLeft === 0}
-              className="flex min-h-12 w-full items-center justify-center rounded-xl bg-emerald-600 px-6 py-3.5 text-base font-bold text-white transition hover:bg-emerald-700 disabled:bg-slate-300"
+              className="flex min-h-12 w-full items-center justify-center rounded-xl bg-brand-600 px-6 py-3.5 text-base font-bold text-white transition hover:bg-brand-700 disabled:bg-slate-300"
             >
               {submitting
                 ? "Enviando comprobante..."

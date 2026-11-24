@@ -87,7 +87,7 @@ export default function Configuracion() {
       </div>
 
       {message ? (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-sm text-emerald-800">
+        <div className="rounded-xl border border-brand-200 bg-brand-50 p-3.5 text-sm text-brand-800">
           {message}
         </div>
       ) : null}
@@ -138,7 +138,7 @@ export default function Configuracion() {
               type="checkbox"
               checked={Boolean(nequi.activo)}
               onChange={(e) => setNequi({ ...nequi, activo: e.target.checked })}
-              className="h-4 w-4 accent-emerald-600"
+              className="h-4 w-4 accent-brand-600"
             />
             Habilitado en la pantalla de pago
           </label>
@@ -186,7 +186,7 @@ export default function Configuracion() {
               type="checkbox"
               checked={Boolean(breb.activo)}
               onChange={(e) => setBreb({ ...breb, activo: e.target.checked })}
-              className="h-4 w-4 accent-emerald-600"
+              className="h-4 w-4 accent-brand-600"
             />
             Habilitado en la pantalla de pago
           </label>
@@ -261,7 +261,7 @@ export default function Configuracion() {
         <button
           type="submit"
           disabled={busy}
-          className="min-h-12 w-full rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white hover:bg-emerald-700 sm:w-auto"
+          className="min-h-12 w-full rounded-xl bg-brand-600 px-4 py-3 text-sm font-bold text-white hover:bg-brand-700 sm:w-auto"
         >
           Guardar WhatsApp
         </button>

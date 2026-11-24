@@ -63,7 +63,7 @@ const EMPTY_PREMIO_FORM = {
 const STATUS_BADGES = {
   BORRADOR: "bg-slate-200 text-slate-800",
   EN_REVISION: "bg-amber-100 text-amber-900",
-  PUBLICADA: "bg-emerald-100 text-emerald-900",
+  PUBLICADA: "bg-brand-100 text-brand-900",
   PAUSADA: "bg-orange-100 text-orange-900",
   CERRADA: "bg-rose-100 text-rose-900",
   FINALIZADA: "bg-blue-100 text-blue-900",
@@ -280,7 +280,7 @@ export default function GestionRifas() {
           <button
             type="button"
             onClick={openCreateModal}
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-700"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-brand-700"
           >
             <Plus className="h-5 w-5" aria-hidden="true" />
             Nueva rifa
@@ -289,7 +289,7 @@ export default function GestionRifas() {
       </div>
 
       {notice ? (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-sm text-emerald-900">
+        <div className="rounded-xl border border-brand-200 bg-brand-50 p-3.5 text-sm text-brand-900">
           {notice}
         </div>
       ) : null}
@@ -367,7 +367,7 @@ export default function GestionRifas() {
                     </div>
                     <div>
                       <span className="block text-slate-500">Vendidos</span>
-                      <strong className="text-emerald-700">{rifa.vendidos || 0}</strong>
+                      <strong className="text-brand-700">{rifa.vendidos || 0}</strong>
                     </div>
                     <div>
                       <span className="block text-slate-500">Premios</span>
@@ -378,12 +378,12 @@ export default function GestionRifas() {
                   <div
                     className={`flex items-start gap-2 rounded-xl border p-3 text-xs ${
                       isAuthorized
-                        ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+                        ? "border-brand-200 bg-brand-50 text-brand-900"
                         : "border-amber-200 bg-amber-50 text-amber-950"
                     }`}
                   >
                     {isAuthorized ? (
-                      <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" aria-hidden="true" />
+                      <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-brand-700" aria-hidden="true" />
                     ) : (
                       <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" aria-hidden="true" />
                     )}
@@ -464,7 +464,7 @@ export default function GestionRifas() {
                             : "Registra y aprueba la autorización legal primero"
                         }
                         onClick={() => handleChangeEstado(rifa, "PUBLICADA")}
-                        className="inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+                        className="inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-brand-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-slate-300"
                       >
                         <Rocket className="h-4 w-4" aria-hidden="true" />
                         Publicar
@@ -729,7 +729,7 @@ export default function GestionRifas() {
             <button
               type="submit"
               disabled={busy}
-              className="flex-1 rounded-xl bg-emerald-600 py-3 text-sm font-bold text-white hover:bg-emerald-700 disabled:bg-slate-300"
+              className="flex-1 rounded-xl bg-brand-600 py-3 text-sm font-bold text-white hover:bg-brand-700 disabled:bg-slate-300"
             >
               {busy ? "Guardando..." : editingRifa ? "Guardar cambios" : "Crear rifa"}
             </button>
@@ -961,7 +961,7 @@ export default function GestionRifas() {
             <button
               type="submit"
               disabled={busy}
-              className="flex-1 rounded-xl bg-emerald-600 py-3 text-sm font-bold text-white hover:bg-emerald-700 disabled:bg-slate-300"
+              className="flex-1 rounded-xl bg-brand-600 py-3 text-sm font-bold text-white hover:bg-brand-700 disabled:bg-slate-300"
             >
               {busy ? "Guardando..." : "Agregar premio"}
             </button>

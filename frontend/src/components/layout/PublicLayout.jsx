@@ -20,7 +20,7 @@ export function PublicLayout() {
             to="/"
             className="inline-flex items-center gap-2 font-bold text-slate-900"
           >
-            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white">
+            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white">
               <Ticket className="h-5 w-5" aria-hidden="true" />
             </span>
             <span className="text-base sm:text-lg">DevSoluciones Rifas</span>
@@ -36,7 +36,7 @@ export function PublicLayout() {
                     className={({ isActive }) =>
                       `inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium transition ${
                         isActive
-                          ? "bg-emerald-50 text-emerald-800"
+                          ? "bg-brand-50 text-brand-800"
                           : "text-slate-700 hover:bg-slate-100"
                       }`
                     }
@@ -87,7 +87,7 @@ export function PublicLayout() {
                   className={({ isActive }) =>
                     `flex min-h-11 items-center rounded-lg px-3 text-base font-medium ${
                       isActive
-                        ? "bg-emerald-600 text-white"
+                        ? "bg-brand-600 text-white"
                         : "text-slate-200 hover:bg-slate-800"
                     }`
                   }

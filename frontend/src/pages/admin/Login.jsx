@@ -32,7 +32,7 @@ export default function Login() {
     <div className="flex min-h-dvh items-center justify-center bg-slate-900 p-4">
       <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl sm:p-8">
         <div className="flex items-center gap-3">
-          <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-600 text-white">
+          <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-brand-600 text-white">
             <ShieldCheck className="h-6 w-6" aria-hidden="true" />
           </span>
           <div>
