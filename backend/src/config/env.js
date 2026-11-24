@@ -1,6 +1,11 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// Carga .env desde la raíz del proyecto o desde backend/.env sin sobrescribir variables del hosting (hPanel)
 dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 const toInt = (value, fallback) => {
   const parsed = Number.parseInt(value, 10);
@@ -35,6 +40,7 @@ export const env = {
   storageDriver: process.env.STORAGE_DRIVER || "local",
   timezone: process.env.TIMEZONE || "America/Bogota",
   reservationCron: process.env.RESERVATION_CRON || "*/1 * * * *",
+  cronSecret: process.env.CRON_SECRET || "",
 };
 
 export function assertProductionEnv() {

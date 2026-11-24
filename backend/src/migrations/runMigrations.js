@@ -6,21 +6,42 @@ import { env } from "../config/env.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-async function runMigrations() {
-  const adminConnection = await mysql.createConnection({
-    host: env.db.host,
-    port: env.db.port,
-    user: env.db.user,
-    password: env.db.password,
-    multipleStatements: true,
-    timezone: "Z",
-  });
-
+async function connectForMigrations() {
   try {
-    await adminConnection.query(
+    // En Hostinger Business/Cloud la base ya existe y el usuario no tiene permiso CREATE DATABASE
+    return await mysql.createConnection({
+      host: env.db.host,
+      port: env.db.port,
+      user: env.db.user,
+      password: env.db.password,
+      database: env.db.name,
+      multipleStatements: true,
+      timezone: "Z",
+    });
+  } catch (error) {
+    if (error.code !== "ER_BAD_DB_ERROR") throw error;
+
+    // En desarrollo local, intentar crear la base de datos si aún no existe
+    const conn = await mysql.createConnection({
+      host: env.db.host,
+      port: env.db.port,
+      user: env.db.user,
+      password: env.db.password,
+      multipleStatements: true,
+      timezone: "Z",
+    });
+    await conn.query(
       `CREATE DATABASE IF NOT EXISTS \`${env.db.name}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`
     );
-    await adminConnection.query(`USE \`${env.db.name}\`;`);
+    await conn.query(`USE \`${env.db.name}\`;`);
+    return conn;
+  }
+}
+
+async function runMigrations() {
+  const adminConnection = await connectForMigrations();
+
+  try {
     await adminConnection.query("SET time_zone = '+00:00';");
 
     await adminConnection.query(`

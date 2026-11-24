@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import express from "express";
@@ -14,6 +15,7 @@ import {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const publicUploadsDir = path.resolve(__dirname, "../public_uploads");
+const frontendDistDir = path.resolve(__dirname, "../../frontend/dist");
 
 export function createApp() {
   const app = express();
@@ -23,6 +25,12 @@ export function createApp() {
   app.use(
     helmet({
       crossOriginResourcePolicy: { policy: "same-site" },
+      contentSecurityPolicy: {
+        directives: {
+          ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+          "img-src": ["'self'", "data:", "blob:", "https:"],
+        },
+      },
     })
   );
 
@@ -54,6 +62,20 @@ export function createApp() {
   );
 
   app.use("/api", apiRoutes);
+
+  // En producción (ej. Hostinger Business Node.js Web App), servir frontend/dist bajo el mismo dominio
+  if (fs.existsSync(path.join(frontendDistDir, "index.html"))) {
+    app.use(
+      express.static(frontendDistDir, {
+        maxAge: env.isProd ? "7d" : 0,
+        index: false,
+      })
+    );
+
+    app.get(/^\/(?!api|uploads).*/, (req, res) => {
+      res.sendFile(path.join(frontendDistDir, "index.html"));
+    });
+  }
 
   app.use(notFoundMiddleware);
   app.use(errorMiddleware);

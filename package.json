@@ -1,0 +1,16 @@
+{
+  "name": "devsoluciones-rifas",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "DevSoluciones Rifas - Monorepo listo para despliegue en Hostinger Node.js Web Apps y VPS",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "build": "npm --prefix backend install --omit=dev && npm --prefix frontend install && npm --prefix frontend run build",
+    "start": "node backend/src/server.js",
+    "migrate": "node backend/src/migrations/runMigrations.js",
+    "seed": "node backend/src/migrations/seedDemo.js"
+  }
+}
